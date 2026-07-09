@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistem Pembuatan Kontrak Subkontrak - PT. Global Busana Internasional</title>
+    <!-- Tailwind CSS v4 -->
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        /* Pengaturan tampilan layar monitor */
+        #cetak-area { display: none; }
+
+        /* Pengaturan Cetak Lembar Dokumen Resmi Sesuai Format PDF Asli */
+        @media print {
+            .no-print { display: none !important; }
+            #cetak-area { 
+                display: block !important; 
+                position: absolute; 
+                left: 0; 
+                top: 0; 
+                width: 100%; 
+                color: black; 
+                background: white; 
+                font-family: 'Times New Roman', Times, serif;
+                font-size: 14px;
+                line-height: 1.5;
+            }
+            
+            /* Mengunci Ukuran Kertas dan Margin Standar Surat Resmi */
+            @page { 
+                size: A4; 
+                margin: 25mm 20mm 25mm 25mm; /* Top, Right, Bottom, Left */
+            }
+
+            /* Mencegah baris tabel terpotong di tengah halaman */
+            tr { page-break-inside: avoid; page-break-after: auto; }
+            thead { display: table-header-group; }
+            
+            /* Mencegah area tanda tangan terpisah sendiri */
+            .area-ttd { page-break-inside: avoid; }
+
+            .kop-surat { 
+                border-bottom: 3px double black; 
+                padding-bottom: 6px; 
+                margin-bottom: 25px; 
+            }
+            table { border-collapse: collapse; width: 100%; margin-bottom: 15px; }
+            th, td { border: 1px solid black !important; padding: 5px 8px; }
+            .border-none! { border: none !important; }
+            .border-none! td { border: none !important; padding: 2px 4px; }
+        }
+    </style>
+</head>
+<body class="bg-slate-100 text-slate-800 font-sans antialiased">
+
+    <!-- PANEL UTAMA APLIKASI (HANYA UNTUK EDIT DATA DI LAYAR) -->
+    <div class="no-print min-h-screen flex flex-col">
+        <!-- HEADER -->
+        <header class="bg-blue-950 text-white shadow-md py-4 px-6 sticky top-0 z-50 flex justify-between items-center">
+            <div class="flex items-center space-x-3">
+                <i class="fa-solid fa-file-contract text-2xl text-blue-400"></i>
+                <div>
+                    <h1 class="text-base font-bold tracking-wide">Generator Kontrak Maklon Rapi Margin</h1>
+                    <p class="text-xs text-slate-400">Verifikasi Dokumen: No. 574/GBI-DK/VI/2026</p>
+                </div>
+            </div>
+            <button onclick="window.focus(); window.print();" class="bg-emerald-600 hover:bg-emerald-700 text-white px-6 py-2.5 rounded-xl font-semibold text-sm flex items-center transition shadow-md cursor-pointer">
+                <i class="fa-solid fa-print mr-2 text-base"></i> CETAK DOKUMEN RAPI
+            </button>
+        </header>
+
+        <!-- LAYOUT UTAMA: INPUT FORM FORMULIR -->
+        <main class="max-w-7xl mx-auto p-4 md:p-6 flex-1 grid grid-cols-1 lg:grid-cols-12 gap-6 w-full">
+            
+            <!-- PANEL KIRI: EDITOR DATA INPUTAN -->
+            <section class="lg:col-span-7 bg-white p-6 rounded-2xl shadow-xs border border-slate-200 space-y-6 h-[85vh] overflow-y-auto">
+                <h2 class="text-lg font-bold text-slate-900 border-b pb-2 flex items-center">
+                    <i class="fa-solid fa-sliders text-blue-600 mr-2"></i> Pengaturan Isi Kontrak Kerja
+                </h2>
+
+                <!-- 1. IDENTITAS SURAT -->
+                <div class="space-y-3 bg-slate-50 p-4 rounded-xl border border-slate-100">
+                    <span class="text-xs font-bold text-blue-900 uppercase block tracking-wider"><i class="fa-solid fa-circle-info mr-1"></i> 1. Informasi Surat</span>
+                    <div>
+                        <label class="block text-xs text-slate-500 mb-1 font-medium">Nomor Kontrak</label>
+                        <input type="text" id="in-no-kontrak" class="w-full px-3 py-1.5 border rounded-lg text-sm" value="574/GBI-DK/VI/2026" oninput="updateSemuaData()">
+                    </div>
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-xs text-slate-500 mb-1 font-medium">Lokasi TTD</label>
+                            <input type="text" id="in-lokasi" class="w-full px-3 py-1.5 border rounded-lg text-sm" value="Brebes" oninput="updateSemuaData()">
+                        </div>
+                        <div>
+                            <label class="block text-xs text-slate-500 mb-1 font-medium">Tanggal TTD</label>
+                            <input type="text" id="in-tgl-kontrak" class="w-full px-3 py-1.5 border rounded-lg text-sm" value="17 Juni 2026" oninput="updateSemuaData()">
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-xs text-slate-500 mb-1 font-medium">Tanggal Mulai Pekerjaan</label>
+                            <input type="text" id="in-tgl-mulai" class="w-full px-3 py-1.5 border rounded-lg text-sm" value="18 Juni 2026" oninput="updateSemuaData()">
+                        </div>
+                        <div>
+                            <label class="block text-xs text-slate-500 mb-1 font-medium">Tanggal Selesai Pekerjaan</label>
+                            <input type="text" id="in-tgl-selesai" class="w-full px-3 py-1.5 border rounded-lg text-sm" value="18 Juli 2026" oninput="updateSemuaData()">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 2. PIHAK PERTAMA -->
+                <div class="space-y-3 bg-slate-50 p-4 rounded-xl border border-slate-100">
+                    <span class="text-xs font-bold text-blue-900 uppercase block tracking-wider"><i class="fa-solid fa-building mr-1"></i> 2. Pihak Pertama (Kawasan Berikat)</span>
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-xs text-slate-500 mb-1 font-medium">Nama Perwakilan Pihak I</label>
+                            <input type="text" id="in-p1-nama" class="w-full px-3 py-1.5 border rounded-lg text-sm" value="JU SANG EUN" oninput="updateSemuaData()">
+                        </div>
+                        <div>
+                            <label class="block text-xs text-slate-500 mb-1 font-medium">Jabatan Korporasi</label>
+                            <input type="text" id="in-p1-jabatan" class="w-full px-3 py-1.5 border rounded-lg text-sm" value="MARKETING MANAGER" oninput="updateSemuaData()">
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-xs text-slate-500 mb-1 font-medium">Nama Perusahaan</label>
+                        <input type="text" id="in-p1-PT" class="w-full px-3 py-1.5 border rounded-lg text-sm font-semibold" value="PT. GLOBAL BUSANA INTERNASIONAL" oninput="updateSemuaData()">
+                    </div>
+                    <div>
+                        <label class="block text-xs text-slate-500 mb-1 font-medium">NPWP Badan Usaha</label>
+                        <input type="text" id="in-p1-npwp" class="w-full px-3 py-1.5 border rounded-lg text-sm font-mono" value="93.513.924.6-501.000" oninput="updateSemuaData()">
+                    </div>
+                    <div>
+                        <label class="block text-xs text-slate-500 mb-1 font-medium">Alamat Lengkap Perusahaan</label>
+                        <textarea id="in-p1-alamat" rows="2" class="w-full px-3 py-1.5 border rounded-lg text-sm" oninput="updateSemuaData()">Jl. Raya Bojongsari, Ketanggungan Desa Bojongsari Kec. Losari Kab. Brebes Jawa Tengah - 52255 Indonesia</textarea>
+                    </div>
+                </div>
+
+                <!-- 3. PIHAK KEDUA -->
+                <div class="space-y-3 bg-slate-50 p-4 rounded-xl border border-slate-100">
+                    <span class="text-xs font-bold text-blue-900 uppercase block tracking-wider"><i class="fa-solid fa-handshake mr-1"></i> 3. Pihak Kedua (Pelaksana Pekerjaan)</span>
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-xs text-slate-500 mb-1 font-medium">Nama Perwakilan Pihak II</label>
+                            <input type="text" id="in-p2-nama" class="w-full px-3 py-1.5 border rounded-lg text-sm" value="HAN JOON SEOK" oninput="updateSemuaData()">
+                        </div>
+                        <div>
+                            <label class="block text-xs text-slate-500 mb-1 font-medium">Jabatan Korporasi</label>
+                            <input type="text" id="in-p2-jabatan" class="w-full px-3 py-1.5 border rounded-lg text-sm" value="DIREKTUR" oninput="updateSemuaData()">
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-xs text-slate-500 mb-1 font-medium">Nama Perusahaan</label>
+                        <input type="text" id="in-p2-PT" class="w-full px-3 py-1.5 border rounded-lg text-sm font-semibold" value="PT DK INTERNATIONAL" oninput="updateSemuaData()">
+                    </div>
+                    <div>
+                        <label class="block text-xs text-slate-500 mb-1 font-medium">NPWP Badan Usaha</label>
+                        <input type="text" id="in-p2-npwp" class="w-full px-3 py-1.5 border rounded-lg text-sm font-mono" value="31.222.500.6-433.000" oninput="updateSemuaData()">
+                    </div>
+                    <div>
+                        <label class="block text-xs text-slate-500 mb-1 font-medium">Alamat Office</label>
+                        <textarea id="in-p2-alamat" rows="2" class="w-full px-3 py-1.5 border rounded-lg text-sm" oninput="updateSemuaData()">Kp. Sukamanah, Kaw. Leuwitex A-2, Desa/Kelurahan Anggadita, Kec. Klari, Kab. Karawang, Provinsi Jawa Barat, Kode Pos: 41371</textarea>
+                    </div>
+                </div>
+
+                <!-- 4. KETENTUAN UTAMA JASA -->
+                <div class="space-y-3 bg-slate-50 p-4 rounded-xl border border-slate-100">
+                    <span class="text-xs font-bold text-blue-900 uppercase block tracking-wider"><i class="fa-solid fa-gavel mr-1"></i> 4. Jenis Pekerjaan & Tarif</span>
+                    <div>
+                        <label class="block text-xs text-slate-500 mb-1 font-medium">Jenis Pekerjaan</label>
+                        <input type="text" id="in-jenis" class="w-full px-3 py-1.5 border rounded-lg text-sm font-semibold" value="WASHING FABRIC" oninput="updateSemuaData()">
+                    </div>
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-xs text-slate-500 mb-1 font-medium">Harga / Tarif Jasa</label>
+                            <input type="text" id="id-harga" class="w-full px-3 py-1.5 border rounded-lg text-sm" value="USD 0,25/KG" oninput="updateSemuaData()">
+                        </div>
+                        <div>
+                            <label class="block text-xs text-slate-500 mb-1 font-medium">Jangka Waktu Total</label>
+                            <input type="text" id="id-waktu" class="w-full px-3 py-1.5 border rounded-lg text-sm" value="30 Hari (Tiga Puluh Hari)" oninput="updateSemuaData()">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 5. BAGIAN BARANG YANG DIKIRIM (SEBELUM WASHING) -->
+                <div class="space-y-3 bg-amber-50 p-4 rounded-xl border border-amber-200">
+                    <div class="flex justify-between items-center">
+                        <span class="text-xs font-bold text-amber-900 uppercase tracking-wider"><i class="fa-solid fa-right-from-bracket mr-1"></i> 5. Tabel I: Data Barang yang Dikirim</span>
+                        <button type="button" onclick="tambahBarisBarang('container-dikirim', 'Sebelum Washing')" class="bg-amber-700 text-white px-2 py-1 rounded text-xs font-medium cursor-pointer">
+                            <i class="fa-solid fa-plus mr-1"></i> Tambah Kolom
+                        </button>
+                    </div>
+                    <div id="container-dikirim" class="space-y-2">
+                        <!-- JS Dinamis -->
+                    </div>
+                </div>
+
+                <!-- 6. BAGIAN BARANG YANG DIHASILKAN (SELESAI WASHING) -->
+                <div class="space-y-3 bg-emerald-50 p-4 rounded-xl border border-emerald-200">
+                    <div class="flex justify-between items-center">
+                        <span class="text-xs font-bold text-emerald-900 uppercase tracking-wider"><i class="fa-solid fa-box mr-1"></i> 6. Tabel II: Data Barang yang Dihasilkan</span>
+                        <button type="button" onclick="tambahBarisBarang('container-dihasilkan', 'Selesai Washing')" class="bg-emerald-700 text-white px-2 py-1 rounded text-xs font-medium cursor-pointer">
+                            <i class="fa-solid fa-plus mr-1"></i> Tambah Kolom
+                        </button>
+                    </div>
+                    <div id="container-dihasilkan" class="space-y-2">
+                        <!-- JS Dinamis -->
+                    </div>
+                </div>
+            </section>
+
+            <!-- PANEL KANAN: MONITOR KONTROL AKTIF -->
+            <section class="lg:col-span-5 bg-slate-800 p-4 rounded-2xl text-white flex flex-col justify-between h-[85vh]">
+                <div class="space-y-4">
+                    <div class="bg-slate-700/60 p-3 rounded-xl border border-slate-600 text-center text-xs">
+                        <i class="fa-solid fa-desktop mr-1"></i> PANEL MONITOR VALIDASI LIVE
+                    </div>
+                    <div class="text-xs space-y-2 font-mono bg-slate-900 p-4 rounded-xl border border-slate-700">
+                        <p><span class="text-amber-400">Pihak 1:</span> <span id="m-p1"></span></p>
+                        <p><span class="text-emerald-400">Pihak 2:</span> <span id="m-p2"></span></p>
+                        <p><span class="text-blue-400">No Kontrak:</span> <span id="m-no"></span></p>
+                        <p><span class="text-purple-400">Pekerjaan:</span> <span id="m-job"></span></p>
+                    </div>
+                </div>
+                <div class="text-center p-3 bg-blue-900/40 rounded-xl border border-blue-800 text-xs text-blue-200">
+                    <i class="fa-solid fa-circle-check mr-1"></i> Jarak margin atas, bawah, kiri, dan kanan kini diatur mengalir otomatis mengikuti kaidah cetak akta notaris/perjanjian legal.
+                </div>
+            </section>
+        </main>
+    </div>
+
+
+    <!-- ============================================================================== -->
+    <!-- ============= AREA CETAK RESMI PDF (ALIRAN KONTINU & MARGIN RAPI) ============= -->
+    <!-- ============================================================================== -->
+    <div id="cetak-area">
+        
+        <!-- Kop Surat Utama Perusahaan -->
+        <div class="text-center kop-surat flex flex-col items-center">
+            <h1 class="text-2xl font-bold tracking-tight">PT. GLOBAL BUSANA INTERNASIONAL</h1>
+            <p class="text-xs font-semibold">Jln. Raya Bojongsari, Ketanggungan, Desa Bojongsari</p>
+            <p class="text-xs">Kecamatan Losari - Kabupaten Brebes, Jawa Tengah 52255</p>
+        </div>
+
+        <!-- Judul Kontrak -->
+        <div class="text-center my-4">
+            <h2 class="text-base font-bold underline tracking-wide">PERJANJIAN KONTRAK Kerja</h2>
+            <p class="font-mono text-sm">NOMOR: <span id="c-no-kontrak"></span></p>
+        </div>
+
+        <p class="mb-3">Yang bertanda tangan dibawah ini:</p>
+        
+        <!-- DATA PIHAK PERTAMA -->
+        <p class="font-bold mb-1">1. Pihak Pertama (Pengusaha Kawasan Berikat):</p>
+        <table class="w-full text-sm mb-4 border-none!">
+            <tr class="border-none!"><td class="w-44 border-none! py-0.5">Nama</td><td class="w-4 border-none! py-0.5">:</td><td id="c-p1-nama" class="font-bold border-none! py-0.5"></td></tr>
+            <tr class="border-none!"><td class="border-none! py-0.5">Jabatan</td><td class="border-none! py-0.5">:</td><td id="c-p1-jabatan" class="border-none! py-0.5"></td></tr>
+            <tr class="border-none!"><td class="border-none! py-0.5">Nama Perusahaan</td><td class="border-none! py-0.5">:</td><td id="c-p1-pt" class="font-bold border-none! py-0.5"></td></tr>
+            <tr class="border-none!"><td class="border-none! py-0.5">NPWP</td><td class="border-none! py-0.5">:</td><td id="c-p1-npwp" class="font-mono border-none! py-0.5"></td></tr>
+            <tr class="border-none!"><td class="border-none! py-0.5" valign="top">Alamat</td><td class="border-none! py-0.5" valign="top">:</td><td id="c-p1-alamat" class="border-none! py-0.5"></td></tr>
+        </table>
+
+        <p class="text-justify mb-4">
+            Dalam hal ini bertindak untuk dan atas nama <span class="c-p1-pt-inline font-bold"></span> yang berkedudukan di BREBES JAWA TENGAH, dengan maksud akan mengeluarkan barang untuk tujuan pekerjaan <span class="c-jenis-inline font-bold"></span>, yang selanjutnya disebut sebagai <strong>Pihak Pertama</strong>.
+        </p>
+
+        <!-- DATA PIHAK KEDUA -->
+        <p class="font-bold mb-1">2. Pihak Kedua (Pelaksana Jasa Eksternal):</p>
+        <table class="w-full text-sm mb-4 border-none!">
+            <tr class="border-none!"><td class="w-44 border-none! py-0.5">Nama</td><td class="w-4 border-none! py-0.5">:</td><td id="c-p2-nama" class="font-bold border-none! py-0.5"></td></tr>
+            <tr class="border-none!"><td class="border-none! py-0.5">Jabatan</td><td class="border-none! py-0.5">:</td><td id="c-p2-jabatan" class="border-none! py-0.5"></td></tr>
+            <tr class="border-none!"><td class="border-none! py-0.5">Nama Perusahaan</td><td class="border-none! py-0.5">:</td><td id="c-p2-pt" class="font-bold border-none! py-0.5"></td></tr>
+            <tr class="border-none!"><td class="border-none! py-0.5">NPWP</td><td class="border-none! py-0.5">:</td><td id="c-p2-npwp" class="font-mono border-none! py-0.5"></td></tr>
+            <tr class="border-none!"><td class="border-none! py-0.5" valign="top">Alamat Office</td><td class="border-none! py-0.5" valign="top">:</td><td id="c-p2-alamat" class="border-none! py-0.5"></td></tr>
+        </table>
+
+        <p class="text-justify mb-4">
+            Dalam hal ini bertindak untuk dan atas <span class="c-p2-pt-inline font-bold"></span> dengan maksud akan menerima barang dari Pihak Pertama dan sebagai pelaksana atas pekerjaan <span class="c-jenis-inline font-bold"></span> dari Pihak Pertama, yang selanjutnya disebut sebagai <strong>Pihak Kedua</strong>.
+        </p>
+
+        <p class="text-justify mb-4">
+            Pihak Pertama dan Pihak Kedua dengan ini menyatakan sepakat mengadakan ikatan kontrak kerja sama pelaksanaan tugas subkontrak maklon industri, dengan ketentuan syarat tarif dan volume sebagai berikut:
+        </p>
+
+        <!-- RINGKASAN KETENTUAN -->
+        <table class="w-full text-sm border-none! ml-2 mb-6">
+            <tr class="border-none!"><td class="w-60 border-none! py-0.5">a. Jenis Aktivitas Pekerjaan</td><td class="w-4 border-none! py-0.5">:</td><td class="c-jenis-inline font-bold border-none! py-0.5"></td></tr>
+            <tr class="border-none!"><td class="border-none! py-0.5">b. Nilai / Harga Jasa</td><td class="border-none! py-0.5">:</td><td id="c-harga" class="font-bold border-none! py-0.5"></td></tr>
+            <tr class="border-none!"><td class="border-none! py-0.5">c. Jangka Waktu Pelaksanaan</td><td class="border-none! py-0.5">:</td><td id="c-waktu" class="border-none! py-0.5"></td></tr>
+            <tr class="border-none!"><td class="border-none! py-0.5">d. Uraian Komoditas Komplit</td><td class="border-none! py-0.5">:</td><td class="border-none! py-0.5">Tercantum secara rinci pada lampiran tabel di bawah ini</td></tr>
+        </table>
+
+
+        <!-- ================= BAGIAN ALIRAN TABEL BARANG ================= -->
+        <div class="mt-8 space-y-6">
+            
+            <!-- TABEL 1: DATA BARANG YANG DIKIRIM -->
+            <div>
+                <p class="font-bold uppercase mb-1 text-xs">A. DATA BARANG YANG DIKIRIM (SEBELUM PROSES):</p>
+                <table class="w-full text-xs text-left border-black">
+                    <thead>
+                        <tr class="bg-gray-100 font-bold">
+                            <th class="p-1.5 text-center w-8">No</th>
+                            <th class="p-1.5">Uraian / Deskripsi Lengkap Barang</th>
+                            <th class="p-1.5 text-center w-28">Kode Registrasi</th>
+                            <th class="p-1.5 text-right w-24">Volume</th>
+                            <th class="p-1.5 text-center w-16">Satuan</th>
+                            <th class="p-1.5 text-center w-20">QTY</th>
+                            <th class="p-1.5 text-center w-24">KETERANGAN</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tabel-print-dikirim">
+                        <!-- Dinamik baris -->
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- TABEL TAMBAHAN MATERIAL -->
+            <div>
+                <p class="font-bold uppercase mb-1 text-xs">B. DATA MATERIAL TAMBAHAN / AKSESORIS:</p>
+                <table class="w-full text-xs text-left border-black">
+                    <thead>
+                        <tr class="bg-gray-100 font-bold">
+                            <th class="p-1 text-center w-8">No</th>
+                            <th class="p-1">Uraian Nama Barang</th>
+                            <th class="p-1 text-center w-32">Kode Barang</th>
+                            <th class="p-1 text-right w-24">Jumlah</th>
+                            <th class="p-1 text-center w-20">Satuan</th>
+                            <th class="p-1 text-center w-24">KETERANGAN</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td class="p-1 text-center">1.</td><td class="p-1">NIHIL</td><td class="p-1 text-center font-mono">-</td><td class="p-1 text-right">0</td><td class="p-1 text-center">-</td><td class="p-1 text-center">-</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- TABEL 2: DATA BARANG YANG AKAN DIHASILKAN -->
+            <div>
+                <p class="font-bold uppercase mb-1 text-xs">C. DATA BARANG YANG AKAN DIHASILKAN (SELESAI PROSES):</p>
+                <table class="w-full text-xs text-left border-black">
+                    <thead>
+                        <tr class="bg-gray-100 font-bold">
+                            <th class="p-1.5 text-center w-8">No</th>
+                            <th class="p-1.5">Uraian / Deskripsi Lengkap Barang</th>
+                            <th class="p-1.5 text-center w-28">Kode Registrasi</th>
+                            <th class="p-1.5 text-right w-24">Volume</th>
+                            <th class="p-1.5 text-center w-16">Satuan</th>
+                            <th class="p-1.5 text-center w-20">QTY</th>
+                            <th class="p-1.5 text-center w-24">KETERANGAN</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tabel-print-dihasilkan">
+                        <!-- Dinamik baris -->
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- TABEL SISA / SCRAP -->
+            <div>
+                <p class="font-bold uppercase mb-1 text-xs">D. DATA SISA SISA HASIL PRODUKSI (SCRAP / WASTE):</p>
+                <table class="w-full text-xs text-left border-black">
+                    <thead>
+                        <tr class="bg-gray-100 font-bold">
+                            <th class="p-1 text-center w-8">No</th>
+                            <th class="p-1">Uraian Nama Sisa</th>
+                            <th class="p-1 text-center w-32">Kode Barang</th>
+                            <th class="p-1 text-right w-24">Jumlah</th>
+                            <th class="p-1 text-center w-20">Satuan</th>
+                            <th class="p-1 text-center w-24">KETERANGAN</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td class="p-1 text-center">1.</td><td class="p-1">NIHIL</td><td class="p-1 text-center font-mono">-</td><td class="p-1 text-right">0</td><td class="p-1 text-center">-</td><td class="p-1 text-center">-</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+
+        <!-- ================= ATURAN PERUNDANG-UNDANGAN ================= -->
+        <div class="mt-6 space-y-1.5 text-xs border-t pt-4 border-black">
+            <p><strong>Ketentuan Tambahan Perjanjian Subkontrak:</strong></p>
+            <p>1. <strong>Masa Berlaku Kerja:</strong> Terhitung mulai tanggal <span id="c-tgl-mulai" class="font-semibold"></span> sampai dengan tanggal <span id="c-tgl-selesai" class="font-semibold"></span>.</p>
+            <p>2. Pengeluaran komoditas dari sarana Pihak Pertama menuju area gudang Pihak Kedua diselenggarakan berangsur-angsur.</p>
+            <p>3. Pihak Kedua berkewajiban menyampaikan notifikasi rincian kargo pesanan secara transparan kepada Pihak Pertama.</p>
+            <p>4. Pihak Kedua menyatakan komitmen penuh dan bersedia diaudit/diperiksa secara berkala oleh petugas perwakilan dari <strong>Kantor Direktorat Jenderal Bea dan Cukai</strong> demi akuntabilitas kepabeanan.</p>
+        </div>
+
+
+        <!-- ================= KLAUSA PENUTUP & TANDA TANGAN ================= -->
+        <div class="area-ttd mt-8">
+            <p class="text-justify mb-4">
+                Demikian Kontrak Kerja Perjanjian ini dirancang secara sadar oleh kedua belah pihak untuk dipatuhi sepenuhnya tanpa paksaan. Segala bentuk penyesuaian materiil di kemudian hari akan disepakati kembali lewat musyawarah mufakat amandemen baru.
+            </p>
+
+            <div class="text-right font-medium mb-6">
+                <span id="c-lokasi-footer">Brebes</span>, <span id="c-tgl-footer">17 Juni 2026</span>
+            </div>
+
+            <div class="flex justify-between text-center font-bold text-sm">
+                <div class="w-64 flex flex-col justify-between h-36">
+                    <p>PIHAK PERTAMA,</p>
+                    <p class="text-xs font-normal" id="c-sign-p1-pt"></p>
+                    <div class="space-y-0.5">
+                        <p class="underline" id="c-sign-p1-nama"></p>
+                        <p class="text-xs font-normal text-gray-700" id="c-sign-p1-jab"></p>
+                    </div>
+                </div>
+
+                <div class="w-64 flex flex-col justify-between h-36">
+                    <p>PIHAK KEDUA,</p>
+                    <p class="text-xs font-normal" id="c-sign-p2-pt"></p>
+                    <div class="space-y-0.5">
+                        <p class="underline" id="c-sign-p2-nama"></p>
+                        <p class="text-xs font-normal text-gray-700" id="c-sign-p2-jab"></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+
+    <!-- LOGIKA PEMROSESAN DINAMIS TABEL DAN DATA -->
+    <script>
+        const dataAwalDikirim = [
+            {nama: "FABRIC 60% US COTTOΝ 33% BCI COTTON 7% POLY FLEECE (SEBELUM WASHING)", kode:"110-001-00047", jml:"27,554.22", sat:"YARD", qty:"359 ROLL"},
+            {nama: "FABRIC 93% BCI COTTON 7% RECYCLE POLY FLEECE (SEBELUM WASHING)", kode:"110-001-00047", jml:"38,010.35", sat:"YARD", qty:"475 ROLL"},
+            {nama: "FABRIC 100% BCI COTTON JERSEY (SEBELUM WASHING)", kode:"110-001-00198", jml:"3,241.58", sat:"YARD", qty:"29 ROLL"},
+            {nama: "FABRIC 60% US COTTON 40% BCI COTTON JERSEY (SEBELUM WASHING)", kode:"110-001-00198", jml:"2,518.53", sat:"YARD", qty:"20 ROLL"}
+        ];
+
+        const dataAwalDihasilkan = [
+            {nama: "FABRIC 60% US COTTOΝ 33% BCI COTTON 7% POLY FLEECE (SELESAI WASHING)", kode:"110-001-00047", jml:"27,554.22", sat:"YARD", qty:"359 BAG"},
+            {nama: "FABRIC 93% BCI COTTΟΝ 7% RECYCLE POLY FLEECE (SELESAI WASHING)", kode:"110-001-00047", jml:"38,010.35", sat:"YARD", qty:"475 BAG"},
+            {nama: "FABRIC 100% BCI COTTON JERSEY (SELESAI WASHING)", kode:"110-001-00198", jml:"3,241.58", sat:"YARD", qty:"29 BAG"},
+            {nama: "FABRIC 60% US COTTOΟΝ 40% BCI COTTON JERSEY (SELESAI WASHING)", kode:"110-001-00198", jml:"2,518.53", sat:"YARD", qty:"20 BAG"}
+        ];
+
+        function muatDataAwal() {
+            document.getElementById('container-dikirim').innerHTML = '';
+            document.getElementById('container-dihasilkan').innerHTML = '';
+            
+            dataAwalDikirim.forEach(b => insertBarisKeForm('container-dikirim', b));
+            dataAwalDihasilkan.forEach(b => insertBarisKeForm('container-dihasilkan', b));
+            
+            updateSemuaData();
+        }
+
+        function insertBarisKeForm(targetId, data) {
+            const container = document.getElementById(targetId);
+            const div = document.createElement('div');
+            div.className = 'item-barang bg-white p-3 border rounded-lg space-y-1 relative';
+            div.innerHTML = `
+                <button type="button" onclick="this.parentElement.remove(); updateSemuaData();" class="absolute top-1 right-2 text-red-500 hover:text-red-700 text-xs"><i class="fa-solid fa-trash"></i> Hapus</button>
+                <input type="text" placeholder="Deskripsi Barang" class="b-nama w-full px-2 py-1 border rounded text-xs font-semibold" value="${data.nama}" oninput="updateSemuaData()">
+                <div class="grid grid-cols-4 gap-1.5">
+                    <input type="text" placeholder="Kode" class="b-kode w-full px-2 py-1 border rounded text-xs font-mono" value="${data.kode}" oninput="updateSemuaData()">
+                    <input type="text" placeholder="Volume" class="b-jumlah w-full px-2 py-1 border rounded text-xs" value="${data.jml}" oninput="updateSemuaData()">
+                    <input type="text" placeholder="Satuan" class="b-satuan w-full px-2 py-1 border rounded text-xs" value="${data.sat}" oninput="updateSemuaData()">
+                    <input type="text" placeholder="QTY" class="b-qty w-full px-2 py-1 border rounded text-xs" value="${data.qty}" oninput="updateSemuaData()">
+                </div>
+            `;
+            container.appendChild(div);
+        }
+
+        function tambahBarisBarang(targetId, statusText) {
+            insertBarisKeForm(targetId, {nama: `FABRIC KAIN BARU (${statusText.toUpperCase()})`, kode: '110-001-xxxxx', jml: '0.00', sat: 'YARD', qty: '0 ROLL'});
+            updateSemuaData();
+        }
+
+        function updateSemuaData() {
+            const noKontrak = document.getElementById('in-no-kontrak').value;
+            const tglKontrak = document.getElementById('in-tgl-kontrak').value;
+            const lokasi = document.getElementById('in-lokasi').value;
+            const tglMulai = document.getElementById('in-tgl-mulai').value;
+            const tglSelesai = document.getElementById('in-tgl-selesai').value;
+
+            const p1Nama = document.getElementById('in-p1-nama').value;
+            const p1Jabatan = document.getElementById('in-p1-jabatan').value;
+            const p1PT = document.getElementById('in-p1-PT').value;
+            const p1Npwp = document.getElementById('in-p1-npwp').value;
+            const p1Alamat = document.getElementById('in-p1-alamat').value;
+
+            const p2Nama = document.getElementById('in-p2-nama').value;
+            const p2Jabatan = document.getElementById('in-p2-jabatan').value;
+            const p2PT = document.getElementById('in-p2-PT').value;
+            const p2Npwp = document.getElementById('in-p2-npwp').value;
+            const p2Alamat = document.getElementById('in-p2-alamat').value;
+
+            const jenis = document.getElementById('in-jenis').value;
+            const harga = document.getElementById('id-harga').value;
+            const waktu = document.getElementById('id-waktu').value;
+
+            // Live Monitor
+            document.getElementById('m-p1').innerText = p1PT;
+            document.getElementById('m-p2').innerText = p2PT;
+            document.getElementById('m-no').innerText = noKontrak;
+            document.getElementById('m-job').innerText = jenis;
+
+            // Sinkronisasi Cetak
+            document.getElementById('c-no-kontrak').innerText = noKontrak;
+            document.getElementById('c-p1-nama').innerText = p1Nama;
+            document.getElementById('c-p1-jabatan').innerText = p1Jabatan;
+            document.getElementById('c-p1-pt').innerText = p1PT;
+            document.getElementById('c-p1-npwp').innerText = p1Npwp;
+            document.getElementById('c-p1-alamat').innerText = p1Alamat;
+
+            document.getElementById('c-p2-nama').innerText = p2Nama;
+            document.getElementById('c-p2-jabatan').innerText = p2Jabatan;
+            document.getElementById('c-p2-pt').innerText = p2PT;
+            document.getElementById('c-p2-npwp').innerText = p2Npwp;
+            document.getElementById('c-p2-alamat').innerText = p2Alamat;
+
+            document.getElementById('c-harga').innerText = harga;
+            document.getElementById('c-waktu').innerText = waktu;
+
+            document.querySelectorAll('.c-p1-pt-inline').forEach(el => el.innerText = p1PT);
+            document.querySelectorAll('.c-p2-pt-inline').forEach(el => el.innerText = p2PT);
+            document.querySelectorAll('.c-jenis-inline').forEach(el => el.innerText = jenis);
+
+            document.getElementById('c-tgl-mulai').innerText = tglMulai;
+            document.getElementById('c-tgl-selesai').innerText = tglSelesai;
+
+            document.getElementById('c-lokasi-footer').innerText = lokasi;
+            document.getElementById('c-tgl-footer').innerText = tglKontrak;
+
+            document.getElementById('c-sign-p1-pt').innerText = p1PT;
+            document.getElementById('c-sign-p1-nama').innerText = p1Nama;
+            document.getElementById('c-sign-p1-jab').innerText = p1Jabatan;
+
+            document.getElementById('c-sign-p2-pt').innerText = p2PT;
+            document.getElementById('c-sign-p2-nama').innerText = p2Nama;
+            document.getElementById('c-sign-p2-jab').innerText = p2Jabatan;
+
+            prosesTabelCetak('container-dikirim', 'tabel-print-dikirim');
+            prosesTabelCetak('container-dihasilkan', 'tabel-print-dihasilkan');
+        }
+
+        function prosesTabelCetak(sourceContainerId, targetTabelId) {
+            const items = document.getElementById(sourceContainerId).querySelectorAll('.item-barang');
+            const tbody = document.getElementById(targetTabelId);
+            tbody.innerHTML = '';
+
+            items.forEach((item, index) => {
+                const nama = item.querySelector('.b-nama').value;
+                const kode = item.querySelector('.b-kode').value;
+                const jumlah = item.querySelector('.b-jumlah').value;
+                const satuan = item.querySelector('.b-satuan').value;
+                const qty = item.querySelector('.b-qty').value;
+
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td class="p-1 text-center">${index + 1}.</td>
+                    <td class="p-1 text-left">${nama}</td>
+                    <td class="p-1 text-center font-mono">${kode}</td>
+                    <td class="p-1 text-right font-mono">${jumlah}</td>
+                    <td class="p-1 text-center uppercase">${satuan}</td>
+                    <td class="p-1 text-center">${qty}</td>
+                    <td class="p-1 text-center font-mono">26KONF511</td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        window.onload = function() {
+            muatDataAwal();
+        };
+    </script>
+</body>
+</html>
