@@ -3,570 +3,714 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistem Pembuatan Kontrak Subkontrak - PT. Global Busana Internasional</title>
-    <!-- Tailwind CSS v4 -->
-    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
+    <title>DEWA PENOLONG - Sistem Multi-Struk Pintar</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <style>
-        /* Pengaturan tampilan layar monitor */
-        #cetak-area { display: none; }
+        :root {
+            --bg-app: #f3f4f6;
+            --card-bg: #ffffff;
+            --primary: #4f46e5;
+            --primary-hover: #4338ca;
+            --success: #10b981;
+            --pertamina: #e21c24;
+            --text-dark: #111827;
+            --text-muted: #6b7280;
+            --border-color: #e5e7eb;
+        }
 
-        /* Pengaturan Cetak Lembar Dokumen Resmi Sesuai Format PDF Asli */
+        * {
+            box-sizing: border-box;
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--bg-app);
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+        }
+
+        /* BRANDING HEADER */
+        .brand-container {
+            text-align: center;
+            margin-bottom: 25px;
+            margin-top: 10px;
+        }
+
+        .brand-logo {
+            font-size: 32px;
+            font-weight: 900;
+            letter-spacing: 1.5px;
+            background: linear-gradient(135deg, #3b82f6 0%, #4f46e5 50%, #ec4899 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 4px 12px rgba(79, 70, 229, 0.15);
+        }
+
+        .brand-subtitle {
+            font-size: 13px;
+            color: var(--text-muted);
+            font-weight: 500;
+            margin-top: 4px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* MAIN RESPONSIBLE CONTAINER */
+        .main-wrapper {
+            display: grid;
+            grid-template-columns: 1.2fr 0.8fr;
+            gap: 25px;
+            max-width: 1150px;
+            width: 100%;
+            align-items: flex-start;
+        }
+
+        /* RESPONSIVE LAYOUT BREAKPOINT */
+        @media (max-width: 950px) {
+            .main-wrapper {
+                grid-template-columns: 1fr;
+            }
+            .receipt-sticky-box {
+                position: static !important;
+                margin: 0 auto;
+            }
+        }
+
+        /* PANEL KARTU INPUT */
+        .card-panel {
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+            border: 1px solid var(--border-color);
+        }
+
+        /* TAB NAVIGATION */
+        .tab-navigation {
+            display: flex;
+            background: #f3f4f6;
+            padding: 6px;
+            border-radius: 12px;
+            margin-bottom: 24px;
+            gap: 6px;
+        }
+
+        .tab-item {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            background: transparent;
+            font-weight: 700;
+            font-size: 13px;
+            color: var(--text-muted);
+            cursor: pointer;
+            border-radius: 9px;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .tab-item.active {
+            background: var(--card-bg);
+            color: var(--primary);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        }
+
+        .tab-item.active.bbm-active {
+            color: var(--pertamina);
+        }
+
+        /* FORM MANAGEMENT */
+        .form-layout {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+
+        .row-span-2 {
+            grid-column: span 2;
+        }
+
+        @media (max-width: 480px) {
+            .form-layout {
+                grid-template-columns: 1fr;
+            }
+            .row-span-2 {
+                grid-column: span 1;
+            }
+        }
+
+        .input-block {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .input-block label {
+            font-size: 12px;
+            font-weight: 700;
+            color: #374151;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .input-block select, .input-block input {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1.5px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: 14px;
+            color: var(--text-dark);
+            background-color: #fafafa;
+            transition: all 0.2s;
+        }
+
+        .input-block select:focus, .input-block input:focus {
+            outline: none;
+            border-color: var(--primary);
+            background-color: #fff;
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+        }
+
+        /* UTILITY GLOBAL BORDER SECTION */
+        .section-divider {
+            grid-column: span 2;
+            border-top: 1px dashed var(--border-color);
+            margin: 8px 0;
+            padding-top: 12px;
+        }
+
+        @media (max-width: 480px) {
+            .section-divider { grid-column: span 1; }
+        }
+
+        /* ACTION BUTTONS */
+        .action-group {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .action-btn {
+            width: 100%;
+            padding: 12px;
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s;
+        }
+
+        .action-btn:hover { transform: translateY(-1px); filter: brightness(0.95); }
+        .action-btn:active { transform: translateY(0); }
+
+        .bg-print { background: #10b981; box-shadow: 0 4px 10px rgba(16, 185, 129, 0.2); }
+        .bg-pdf { background: #3b82f6; box-shadow: 0 4px 10px rgba(59, 130, 246, 0.2); }
+        .bg-wa { background: #22c55e; box-shadow: 0 4px 10px rgba(34, 197, 94, 0.2); }
+
+        /* RECEIPT LIVE PREVIEW BOX */
+        .receipt-sticky-box {
+            background: #ffffff;
+            padding: 24px 18px;
+            border-radius: 8px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.06);
+            height: fit-content;
+            position: sticky;
+            top: 20px;
+            width: 80mm; 
+            max-width: 100%;
+            border: 1px solid var(--border-color);
+            transition: width 0.2s ease;
+        }
+
+        .receipt-engine {
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 12px;
+            color: #000;
+            line-height: 1.4;
+            background: #fff;
+        }
+        
+        .r-logo-wrap {
+            text-align: center;
+            margin-bottom: 12px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .r-logo-img {
+            display: block;
+            max-width: 100%;
+            height: auto;
+            mix-blend-mode: multiply;
+        }
+        
+        .r-center { text-align: center; }
+        .r-dash { border-top: 1px dashed #000; margin: 8px 0; }
+        .r-flex { display: flex; justify-content: space-between; }
+        .r-bold { font-weight: bold; }
+
         @media print {
-            .no-print { display: none !important; }
-            #cetak-area { 
-                display: block !important; 
-                position: absolute; 
-                left: 0; 
-                top: 0; 
-                width: 100%; 
-                color: black; 
-                background: white; 
-                font-family: 'Times New Roman', Times, serif;
-                font-size: 14px;
-                line-height: 1.5;
-            }
-            
-            /* Mengunci Ukuran Kertas dan Margin Standar Surat Resmi */
-            @page { 
-                size: A4; 
-                margin: 25mm 20mm 25mm 25mm; /* Top, Right, Bottom, Left */
-            }
-
-            /* Mencegah baris tabel terpotong di tengah halaman */
-            tr { page-break-inside: avoid; page-break-after: auto; }
-            thead { display: table-header-group; }
-            
-            /* Mencegah area tanda tangan terpisah sendiri */
-            .area-ttd { page-break-inside: avoid; }
-
-            .kop-surat { 
-                border-bottom: 3px double black; 
-                padding-bottom: 6px; 
-                margin-bottom: 25px; 
-            }
-            table { border-collapse: collapse; width: 100%; margin-bottom: 15px; }
-            th, td { border: 1px solid black !important; padding: 5px 8px; }
-            .border-none! { border: none !important; }
-            .border-none! td { border: none !important; padding: 2px 4px; }
+            body { background: white; padding: 0; }
+            .brand-container, .card-panel { display: none !important; }
+            .receipt-sticky-box { border: none; box-shadow: none; padding: 0; margin: 0; }
+            .r-logo-wrap { display: none !important; } 
         }
     </style>
 </head>
-<body class="bg-slate-100 text-slate-800 font-sans antialiased">
+<body>
 
-    <!-- PANEL UTAMA APLIKASI (HANYA UNTUK EDIT DATA DI LAYAR) -->
-    <div class="no-print min-h-screen flex flex-col">
-        <!-- HEADER -->
-        <header class="bg-blue-950 text-white shadow-md py-4 px-6 sticky top-0 z-50 flex justify-between items-center">
-            <div class="flex items-center space-x-3">
-                <i class="fa-solid fa-file-contract text-2xl text-blue-400"></i>
-                <div>
-                    <h1 class="text-base font-bold tracking-wide">Generator Kontrak Maklon Rapi Margin</h1>
-                    <p class="text-xs text-slate-400">Verifikasi Dokumen: No. 574/GBI-DK/VI/2026</p>
-                </div>
-            </div>
-            <button onclick="window.focus(); window.print();" class="bg-emerald-600 hover:bg-emerald-700 text-white px-6 py-2.5 rounded-xl font-semibold text-sm flex items-center transition shadow-md cursor-pointer">
-                <i class="fa-solid fa-print mr-2 text-base"></i> CETAK DOKUMEN RAPI
-            </button>
-        </header>
-
-        <!-- LAYOUT UTAMA: INPUT FORM FORMULIR -->
-        <main class="max-w-7xl mx-auto p-4 md:p-6 flex-1 grid grid-cols-1 lg:grid-cols-12 gap-6 w-full">
-            
-            <!-- PANEL KIRI: EDITOR DATA INPUTAN -->
-            <section class="lg:col-span-7 bg-white p-6 rounded-2xl shadow-xs border border-slate-200 space-y-6 h-[85vh] overflow-y-auto">
-                <h2 class="text-lg font-bold text-slate-900 border-b pb-2 flex items-center">
-                    <i class="fa-solid fa-sliders text-blue-600 mr-2"></i> Pengaturan Isi Kontrak Kerja
-                </h2>
-
-                <!-- 1. IDENTITAS SURAT -->
-                <div class="space-y-3 bg-slate-50 p-4 rounded-xl border border-slate-100">
-                    <span class="text-xs font-bold text-blue-900 uppercase block tracking-wider"><i class="fa-solid fa-circle-info mr-1"></i> 1. Informasi Surat</span>
-                    <div>
-                        <label class="block text-xs text-slate-500 mb-1 font-medium">Nomor Kontrak</label>
-                        <input type="text" id="in-no-kontrak" class="w-full px-3 py-1.5 border rounded-lg text-sm" value="574/GBI-DK/VI/2026" oninput="updateSemuaData()">
-                    </div>
-                    <div class="grid grid-cols-2 gap-3">
-                        <div>
-                            <label class="block text-xs text-slate-500 mb-1 font-medium">Lokasi TTD</label>
-                            <input type="text" id="in-lokasi" class="w-full px-3 py-1.5 border rounded-lg text-sm" value="Brebes" oninput="updateSemuaData()">
-                        </div>
-                        <div>
-                            <label class="block text-xs text-slate-500 mb-1 font-medium">Tanggal TTD</label>
-                            <input type="text" id="in-tgl-kontrak" class="w-full px-3 py-1.5 border rounded-lg text-sm" value="17 Juni 2026" oninput="updateSemuaData()">
-                        </div>
-                    </div>
-                    <div class="grid grid-cols-2 gap-3">
-                        <div>
-                            <label class="block text-xs text-slate-500 mb-1 font-medium">Tanggal Mulai Pekerjaan</label>
-                            <input type="text" id="in-tgl-mulai" class="w-full px-3 py-1.5 border rounded-lg text-sm" value="18 Juni 2026" oninput="updateSemuaData()">
-                        </div>
-                        <div>
-                            <label class="block text-xs text-slate-500 mb-1 font-medium">Tanggal Selesai Pekerjaan</label>
-                            <input type="text" id="in-tgl-selesai" class="w-full px-3 py-1.5 border rounded-lg text-sm" value="18 Juli 2026" oninput="updateSemuaData()">
-                        </div>
-                    </div>
-                </div>
-
-                <!-- 2. PIHAK PERTAMA -->
-                <div class="space-y-3 bg-slate-50 p-4 rounded-xl border border-slate-100">
-                    <span class="text-xs font-bold text-blue-900 uppercase block tracking-wider"><i class="fa-solid fa-building mr-1"></i> 2. Pihak Pertama (Kawasan Berikat)</span>
-                    <div class="grid grid-cols-2 gap-3">
-                        <div>
-                            <label class="block text-xs text-slate-500 mb-1 font-medium">Nama Perwakilan Pihak I</label>
-                            <input type="text" id="in-p1-nama" class="w-full px-3 py-1.5 border rounded-lg text-sm" value="JU SANG EUN" oninput="updateSemuaData()">
-                        </div>
-                        <div>
-                            <label class="block text-xs text-slate-500 mb-1 font-medium">Jabatan Korporasi</label>
-                            <input type="text" id="in-p1-jabatan" class="w-full px-3 py-1.5 border rounded-lg text-sm" value="MARKETING MANAGER" oninput="updateSemuaData()">
-                        </div>
-                    </div>
-                    <div>
-                        <label class="block text-xs text-slate-500 mb-1 font-medium">Nama Perusahaan</label>
-                        <input type="text" id="in-p1-PT" class="w-full px-3 py-1.5 border rounded-lg text-sm font-semibold" value="PT. GLOBAL BUSANA INTERNASIONAL" oninput="updateSemuaData()">
-                    </div>
-                    <div>
-                        <label class="block text-xs text-slate-500 mb-1 font-medium">NPWP Badan Usaha</label>
-                        <input type="text" id="in-p1-npwp" class="w-full px-3 py-1.5 border rounded-lg text-sm font-mono" value="93.513.924.6-501.000" oninput="updateSemuaData()">
-                    </div>
-                    <div>
-                        <label class="block text-xs text-slate-500 mb-1 font-medium">Alamat Lengkap Perusahaan</label>
-                        <textarea id="in-p1-alamat" rows="2" class="w-full px-3 py-1.5 border rounded-lg text-sm" oninput="updateSemuaData()">Jl. Raya Bojongsari, Ketanggungan Desa Bojongsari Kec. Losari Kab. Brebes Jawa Tengah - 52255 Indonesia</textarea>
-                    </div>
-                </div>
-
-                <!-- 3. PIHAK KEDUA -->
-                <div class="space-y-3 bg-slate-50 p-4 rounded-xl border border-slate-100">
-                    <span class="text-xs font-bold text-blue-900 uppercase block tracking-wider"><i class="fa-solid fa-handshake mr-1"></i> 3. Pihak Kedua (Pelaksana Pekerjaan)</span>
-                    <div class="grid grid-cols-2 gap-3">
-                        <div>
-                            <label class="block text-xs text-slate-500 mb-1 font-medium">Nama Perwakilan Pihak II</label>
-                            <input type="text" id="in-p2-nama" class="w-full px-3 py-1.5 border rounded-lg text-sm" value="HAN JOON SEOK" oninput="updateSemuaData()">
-                        </div>
-                        <div>
-                            <label class="block text-xs text-slate-500 mb-1 font-medium">Jabatan Korporasi</label>
-                            <input type="text" id="in-p2-jabatan" class="w-full px-3 py-1.5 border rounded-lg text-sm" value="DIREKTUR" oninput="updateSemuaData()">
-                        </div>
-                    </div>
-                    <div>
-                        <label class="block text-xs text-slate-500 mb-1 font-medium">Nama Perusahaan</label>
-                        <input type="text" id="in-p2-PT" class="w-full px-3 py-1.5 border rounded-lg text-sm font-semibold" value="PT DK INTERNATIONAL" oninput="updateSemuaData()">
-                    </div>
-                    <div>
-                        <label class="block text-xs text-slate-500 mb-1 font-medium">NPWP Badan Usaha</label>
-                        <input type="text" id="in-p2-npwp" class="w-full px-3 py-1.5 border rounded-lg text-sm font-mono" value="31.222.500.6-433.000" oninput="updateSemuaData()">
-                    </div>
-                    <div>
-                        <label class="block text-xs text-slate-500 mb-1 font-medium">Alamat Office</label>
-                        <textarea id="in-p2-alamat" rows="2" class="w-full px-3 py-1.5 border rounded-lg text-sm" oninput="updateSemuaData()">Kp. Sukamanah, Kaw. Leuwitex A-2, Desa/Kelurahan Anggadita, Kec. Klari, Kab. Karawang, Provinsi Jawa Barat, Kode Pos: 41371</textarea>
-                    </div>
-                </div>
-
-                <!-- 4. KETENTUAN UTAMA JASA -->
-                <div class="space-y-3 bg-slate-50 p-4 rounded-xl border border-slate-100">
-                    <span class="text-xs font-bold text-blue-900 uppercase block tracking-wider"><i class="fa-solid fa-gavel mr-1"></i> 4. Jenis Pekerjaan & Tarif</span>
-                    <div>
-                        <label class="block text-xs text-slate-500 mb-1 font-medium">Jenis Pekerjaan</label>
-                        <input type="text" id="in-jenis" class="w-full px-3 py-1.5 border rounded-lg text-sm font-semibold" value="WASHING FABRIC" oninput="updateSemuaData()">
-                    </div>
-                    <div class="grid grid-cols-2 gap-3">
-                        <div>
-                            <label class="block text-xs text-slate-500 mb-1 font-medium">Harga / Tarif Jasa</label>
-                            <input type="text" id="id-harga" class="w-full px-3 py-1.5 border rounded-lg text-sm" value="USD 0,25/KG" oninput="updateSemuaData()">
-                        </div>
-                        <div>
-                            <label class="block text-xs text-slate-500 mb-1 font-medium">Jangka Waktu Total</label>
-                            <input type="text" id="id-waktu" class="w-full px-3 py-1.5 border rounded-lg text-sm" value="30 Hari (Tiga Puluh Hari)" oninput="updateSemuaData()">
-                        </div>
-                    </div>
-                </div>
-
-                <!-- 5. BAGIAN BARANG YANG DIKIRIM (SEBELUM WASHING) -->
-                <div class="space-y-3 bg-amber-50 p-4 rounded-xl border border-amber-200">
-                    <div class="flex justify-between items-center">
-                        <span class="text-xs font-bold text-amber-900 uppercase tracking-wider"><i class="fa-solid fa-right-from-bracket mr-1"></i> 5. Tabel I: Data Barang yang Dikirim</span>
-                        <button type="button" onclick="tambahBarisBarang('container-dikirim', 'Sebelum Washing')" class="bg-amber-700 text-white px-2 py-1 rounded text-xs font-medium cursor-pointer">
-                            <i class="fa-solid fa-plus mr-1"></i> Tambah Kolom
-                        </button>
-                    </div>
-                    <div id="container-dikirim" class="space-y-2">
-                        <!-- JS Dinamis -->
-                    </div>
-                </div>
-
-                <!-- 6. BAGIAN BARANG YANG DIHASILKAN (SELESAI WASHING) -->
-                <div class="space-y-3 bg-emerald-50 p-4 rounded-xl border border-emerald-200">
-                    <div class="flex justify-between items-center">
-                        <span class="text-xs font-bold text-emerald-900 uppercase tracking-wider"><i class="fa-solid fa-box mr-1"></i> 6. Tabel II: Data Barang yang Dihasilkan</span>
-                        <button type="button" onclick="tambahBarisBarang('container-dihasilkan', 'Selesai Washing')" class="bg-emerald-700 text-white px-2 py-1 rounded text-xs font-medium cursor-pointer">
-                            <i class="fa-solid fa-plus mr-1"></i> Tambah Kolom
-                        </button>
-                    </div>
-                    <div id="container-dihasilkan" class="space-y-2">
-                        <!-- JS Dinamis -->
-                    </div>
-                </div>
-            </section>
-
-            <!-- PANEL KANAN: MONITOR KONTROL AKTIF -->
-            <section class="lg:col-span-5 bg-slate-800 p-4 rounded-2xl text-white flex flex-col justify-between h-[85vh]">
-                <div class="space-y-4">
-                    <div class="bg-slate-700/60 p-3 rounded-xl border border-slate-600 text-center text-xs">
-                        <i class="fa-solid fa-desktop mr-1"></i> PANEL MONITOR VALIDASI LIVE
-                    </div>
-                    <div class="text-xs space-y-2 font-mono bg-slate-900 p-4 rounded-xl border border-slate-700">
-                        <p><span class="text-amber-400">Pihak 1:</span> <span id="m-p1"></span></p>
-                        <p><span class="text-emerald-400">Pihak 2:</span> <span id="m-p2"></span></p>
-                        <p><span class="text-blue-400">No Kontrak:</span> <span id="m-no"></span></p>
-                        <p><span class="text-purple-400">Pekerjaan:</span> <span id="m-job"></span></p>
-                    </div>
-                </div>
-                <div class="text-center p-3 bg-blue-900/40 rounded-xl border border-blue-800 text-xs text-blue-200">
-                    <i class="fa-solid fa-circle-check mr-1"></i> Jarak margin atas, bawah, kiri, dan kanan kini diatur mengalir otomatis mengikuti kaidah cetak akta notaris/perjanjian legal.
-                </div>
-            </section>
-        </main>
+    <div class="brand-container">
+        <div class="brand-logo">DEWA PENOLONG</div>
+        <div class="brand-subtitle">Sistem Cetak Struk Multi-Fungsi Premium</div>
     </div>
 
-
-    <!-- ============================================================================== -->
-    <!-- ============= AREA CETAK RESMI PDF (ALIRAN KONTINU & MARGIN RAPI) ============= -->
-    <!-- ============================================================================== -->
-    <div id="cetak-area">
+    <div class="main-wrapper">
         
-        <!-- Kop Surat Utama Perusahaan -->
-        <div class="text-center kop-surat flex flex-col items-center">
-            <h1 class="text-2xl font-bold tracking-tight">PT. GLOBAL BUSANA INTERNASIONAL</h1>
-            <p class="text-xs font-semibold">Jln. Raya Bojongsari, Ketanggungan, Desa Bojongsari</p>
-            <p class="text-xs">Kecamatan Losari - Kabupaten Brebes, Jawa Tengah 52255</p>
-        </div>
-
-        <!-- Judul Kontrak -->
-        <div class="text-center my-4">
-            <h2 class="text-base font-bold underline tracking-wide">PERJANJIAN KONTRAK Kerja</h2>
-            <p class="font-mono text-sm">NOMOR: <span id="c-no-kontrak"></span></p>
-        </div>
-
-        <p class="mb-3">Yang bertanda tangan dibawah ini:</p>
-        
-        <!-- DATA PIHAK PERTAMA -->
-        <p class="font-bold mb-1">1. Pihak Pertama (Pengusaha Kawasan Berikat):</p>
-        <table class="w-full text-sm mb-4 border-none!">
-            <tr class="border-none!"><td class="w-44 border-none! py-0.5">Nama</td><td class="w-4 border-none! py-0.5">:</td><td id="c-p1-nama" class="font-bold border-none! py-0.5"></td></tr>
-            <tr class="border-none!"><td class="border-none! py-0.5">Jabatan</td><td class="border-none! py-0.5">:</td><td id="c-p1-jabatan" class="border-none! py-0.5"></td></tr>
-            <tr class="border-none!"><td class="border-none! py-0.5">Nama Perusahaan</td><td class="border-none! py-0.5">:</td><td id="c-p1-pt" class="font-bold border-none! py-0.5"></td></tr>
-            <tr class="border-none!"><td class="border-none! py-0.5">NPWP</td><td class="border-none! py-0.5">:</td><td id="c-p1-npwp" class="font-mono border-none! py-0.5"></td></tr>
-            <tr class="border-none!"><td class="border-none! py-0.5" valign="top">Alamat</td><td class="border-none! py-0.5" valign="top">:</td><td id="c-p1-alamat" class="border-none! py-0.5"></td></tr>
-        </table>
-
-        <p class="text-justify mb-4">
-            Dalam hal ini bertindak untuk dan atas nama <span class="c-p1-pt-inline font-bold"></span> yang berkedudukan di BREBES JAWA TENGAH, dengan maksud akan mengeluarkan barang untuk tujuan pekerjaan <span class="c-jenis-inline font-bold"></span>, yang selanjutnya disebut sebagai <strong>Pihak Pertama</strong>.
-        </p>
-
-        <!-- DATA PIHAK KEDUA -->
-        <p class="font-bold mb-1">2. Pihak Kedua (Pelaksana Jasa Eksternal):</p>
-        <table class="w-full text-sm mb-4 border-none!">
-            <tr class="border-none!"><td class="w-44 border-none! py-0.5">Nama</td><td class="w-4 border-none! py-0.5">:</td><td id="c-p2-nama" class="font-bold border-none! py-0.5"></td></tr>
-            <tr class="border-none!"><td class="border-none! py-0.5">Jabatan</td><td class="border-none! py-0.5">:</td><td id="c-p2-jabatan" class="border-none! py-0.5"></td></tr>
-            <tr class="border-none!"><td class="border-none! py-0.5">Nama Perusahaan</td><td class="border-none! py-0.5">:</td><td id="c-p2-pt" class="font-bold border-none! py-0.5"></td></tr>
-            <tr class="border-none!"><td class="border-none! py-0.5">NPWP</td><td class="border-none! py-0.5">:</td><td id="c-p2-npwp" class="font-mono border-none! py-0.5"></td></tr>
-            <tr class="border-none!"><td class="border-none! py-0.5" valign="top">Alamat Office</td><td class="border-none! py-0.5" valign="top">:</td><td id="c-p2-alamat" class="border-none! py-0.5"></td></tr>
-        </table>
-
-        <p class="text-justify mb-4">
-            Dalam hal ini bertindak untuk dan atas <span class="c-p2-pt-inline font-bold"></span> dengan maksud akan menerima barang dari Pihak Pertama dan sebagai pelaksana atas pekerjaan <span class="c-jenis-inline font-bold"></span> dari Pihak Pertama, yang selanjutnya disebut sebagai <strong>Pihak Kedua</strong>.
-        </p>
-
-        <p class="text-justify mb-4">
-            Pihak Pertama dan Pihak Kedua dengan ini menyatakan sepakat mengadakan ikatan kontrak kerja sama pelaksanaan tugas subkontrak maklon industri, dengan ketentuan syarat tarif dan volume sebagai berikut:
-        </p>
-
-        <!-- RINGKASAN KETENTUAN -->
-        <table class="w-full text-sm border-none! ml-2 mb-6">
-            <tr class="border-none!"><td class="w-60 border-none! py-0.5">a. Jenis Aktivitas Pekerjaan</td><td class="w-4 border-none! py-0.5">:</td><td class="c-jenis-inline font-bold border-none! py-0.5"></td></tr>
-            <tr class="border-none!"><td class="border-none! py-0.5">b. Nilai / Harga Jasa</td><td class="border-none! py-0.5">:</td><td id="c-harga" class="font-bold border-none! py-0.5"></td></tr>
-            <tr class="border-none!"><td class="border-none! py-0.5">c. Jangka Waktu Pelaksanaan</td><td class="border-none! py-0.5">:</td><td id="c-waktu" class="border-none! py-0.5"></td></tr>
-            <tr class="border-none!"><td class="border-none! py-0.5">d. Uraian Komoditas Komplit</td><td class="border-none! py-0.5">:</td><td class="border-none! py-0.5">Tercantum secara rinci pada lampiran tabel di bawah ini</td></tr>
-        </table>
-
-
-        <!-- ================= BAGIAN ALIRAN TABEL BARANG ================= -->
-        <div class="mt-8 space-y-6">
-            
-            <!-- TABEL 1: DATA BARANG YANG DIKIRIM -->
-            <div>
-                <p class="font-bold uppercase mb-1 text-xs">A. DATA BARANG YANG DIKIRIM (SEBELUM PROSES):</p>
-                <table class="w-full text-xs text-left border-black">
-                    <thead>
-                        <tr class="bg-gray-100 font-bold">
-                            <th class="p-1.5 text-center w-8">No</th>
-                            <th class="p-1.5">Uraian / Deskripsi Lengkap Barang</th>
-                            <th class="p-1.5 text-center w-28">Kode Registrasi</th>
-                            <th class="p-1.5 text-right w-24">Volume</th>
-                            <th class="p-1.5 text-center w-16">Satuan</th>
-                            <th class="p-1.5 text-center w-20">QTY</th>
-                            <th class="p-1.5 text-center w-24">KETERANGAN</th>
-                        </tr>
-                    </thead>
-                    <tbody id="tabel-print-dikirim">
-                        <!-- Dinamik baris -->
-                    </tbody>
-                </table>
+        <div class="card-panel">
+            <div class="tab-navigation">
+                <button id="btnTabTol" class="tab-item active" onclick="triggerTab('tol')">🚗 STRUK JALAN TOAL</button>
+                <button id="btnTabBbm" class="tab-item" onclick="triggerTab('bbm')">⚓ STRUK BBM PERTAMINA</button>
             </div>
 
-            <!-- TABEL TAMBAHAN MATERIAL -->
-            <div>
-                <p class="font-bold uppercase mb-1 text-xs">B. DATA MATERIAL TAMBAHAN / AKSESORIS:</p>
-                <table class="w-full text-xs text-left border-black">
-                    <thead>
-                        <tr class="bg-gray-100 font-bold">
-                            <th class="p-1 text-center w-8">No</th>
-                            <th class="p-1">Uraian Nama Barang</th>
-                            <th class="p-1 text-center w-32">Kode Barang</th>
-                            <th class="p-1 text-right w-24">Jumlah</th>
-                            <th class="p-1 text-center w-20">Satuan</th>
-                            <th class="p-1 text-center w-24">KETERANGAN</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr><td class="p-1 text-center">1.</td><td class="p-1">NIHIL</td><td class="p-1 text-center font-mono">-</td><td class="p-1 text-right">0</td><td class="p-1 text-center">-</td><td class="p-1 text-center">-</td></tr>
-                    </tbody>
-                </table>
-            </div>
-
-            <!-- TABEL 2: DATA BARANG YANG AKAN DIHASILKAN -->
-            <div>
-                <p class="font-bold uppercase mb-1 text-xs">C. DATA BARANG YANG AKAN DIHASILKAN (SELESAI PROSES):</p>
-                <table class="w-full text-xs text-left border-black">
-                    <thead>
-                        <tr class="bg-gray-100 font-bold">
-                            <th class="p-1.5 text-center w-8">No</th>
-                            <th class="p-1.5">Uraian / Deskripsi Lengkap Barang</th>
-                            <th class="p-1.5 text-center w-28">Kode Registrasi</th>
-                            <th class="p-1.5 text-right w-24">Volume</th>
-                            <th class="p-1.5 text-center w-16">Satuan</th>
-                            <th class="p-1.5 text-center w-20">QTY</th>
-                            <th class="p-1.5 text-center w-24">KETERANGAN</th>
-                        </tr>
-                    </thead>
-                    <tbody id="tabel-print-dihasilkan">
-                        <!-- Dinamik baris -->
-                    </tbody>
-                </table>
-            </div>
-
-            <!-- TABEL SISA / SCRAP -->
-            <div>
-                <p class="font-bold uppercase mb-1 text-xs">D. DATA SISA SISA HASIL PRODUKSI (SCRAP / WASTE):</p>
-                <table class="w-full text-xs text-left border-black">
-                    <thead>
-                        <tr class="bg-gray-100 font-bold">
-                            <th class="p-1 text-center w-8">No</th>
-                            <th class="p-1">Uraian Nama Sisa</th>
-                            <th class="p-1 text-center w-32">Kode Barang</th>
-                            <th class="p-1 text-right w-24">Jumlah</th>
-                            <th class="p-1 text-center w-20">Satuan</th>
-                            <th class="p-1 text-center w-24">KETERANGAN</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr><td class="p-1 text-center">1.</td><td class="p-1">NIHIL</td><td class="p-1 text-center font-mono">-</td><td class="p-1 text-right">0</td><td class="p-1 text-center">-</td><td class="p-1 text-center">-</td></tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-
-
-        <!-- ================= ATURAN PERUNDANG-UNDANGAN ================= -->
-        <div class="mt-6 space-y-1.5 text-xs border-t pt-4 border-black">
-            <p><strong>Ketentuan Tambahan Perjanjian Subkontrak:</strong></p>
-            <p>1. <strong>Masa Berlaku Kerja:</strong> Terhitung mulai tanggal <span id="c-tgl-mulai" class="font-semibold"></span> sampai dengan tanggal <span id="c-tgl-selesai" class="font-semibold"></span>.</p>
-            <p>2. Pengeluaran komoditas dari sarana Pihak Pertama menuju area gudang Pihak Kedua diselenggarakan berangsur-angsur.</p>
-            <p>3. Pihak Kedua berkewajiban menyampaikan notifikasi rincian kargo pesanan secara transparan kepada Pihak Pertama.</p>
-            <p>4. Pihak Kedua menyatakan komitmen penuh dan bersedia diaudit/diperiksa secara berkala oleh petugas perwakilan dari <strong>Kantor Direktorat Jenderal Bea dan Cukai</strong> demi akuntabilitas kepabeanan.</p>
-        </div>
-
-
-        <!-- ================= KLAUSA PENUTUP & TANDA TANGAN ================= -->
-        <div class="area-ttd mt-8">
-            <p class="text-justify mb-4">
-                Demikian Kontrak Kerja Perjanjian ini dirancang secara sadar oleh kedua belah pihak untuk dipatuhi sepenuhnya tanpa paksaan. Segala bentuk penyesuaian materiil di kemudian hari akan disepakati kembali lewat musyawarah mufakat amandemen baru.
-            </p>
-
-            <div class="text-right font-medium mb-6">
-                <span id="c-lokasi-footer">Brebes</span>, <span id="c-tgl-footer">17 Juni 2026</span>
-            </div>
-
-            <div class="flex justify-between text-center font-bold text-sm">
-                <div class="w-64 flex flex-col justify-between h-36">
-                    <p>PIHAK PERTAMA,</p>
-                    <p class="text-xs font-normal" id="c-sign-p1-pt"></p>
-                    <div class="space-y-0.5">
-                        <p class="underline" id="c-sign-p1-nama"></p>
-                        <p class="text-xs font-normal text-gray-700" id="c-sign-p1-jab"></p>
+            <form onsubmit="event.preventDefault();">
+                <div id="gridTolContainer" class="form-layout">
+                    <div class="input-block row-span-2">
+                        <label>Operator / Pengembang</label>
+                        <select id="tolOp" onchange="generateRuasData()"></select>
+                    </div>
+                    <div class="input-block row-span-2">
+                        <label>Ruas Lintasan Tol</label>
+                        <select id="tolRuas" onchange="generateGerbangData()"></select>
+                    </div>
+                    <div class="input-block">
+                        <label>Gerbang Masuk</label>
+                        <select id="tolMasuk" onchange="liveRender()"></select>
+                    </div>
+                    <div class="input-block">
+                        <label>Gerbang Keluar</label>
+                        <select id="tolKeluar" onchange="liveRender()"></select>
+                    </div>
+                    <div class="input-block">
+                        <label style="color: var(--primary);">Tarif Tol (Isi Manual Rp)</label>
+                        <input type="number" id="tolTarif" value="19500" oninput="liveRender()">
+                    </div>
+                    <div class="input-block">
+                        <label>Sisa Saldo Kartu (Rp)</label>
+                        <input type="number" id="tolSaldo" value="84000" oninput="liveRender()">
+                    </div>
+                    <div class="input-block row-span-2">
+                        <label>Nomor Seri Kartu E-Toll</label>
+                        <input type="text" id="tolKartu" value="936000128471049" oninput="liveRender()">
                     </div>
                 </div>
 
-                <div class="w-64 flex flex-col justify-between h-36">
-                    <p>PIHAK KEDUA,</p>
-                    <p class="text-xs font-normal" id="c-sign-p2-pt"></p>
-                    <div class="space-y-0.5">
-                        <p class="underline" id="c-sign-p2-nama"></p>
-                        <p class="text-xs font-normal text-gray-700" id="c-sign-p2-jab"></p>
+                <div id="gridBbmContainer" class="form-layout" style="display: none;">
+                    <div class="input-block">
+                        <label>Nomor SPBU</label>
+                        <input type="text" id="bbmSpbu" value="31.14301" oninput="liveRender()">
+                    </div>
+                    <div class="input-block">
+                        <label>No. Pompa / Nozzle</label>
+                        <input type="text" id="bbmNozzle" value="02" oninput="liveRender()">
+                    </div>
+                    <div class="input-block row-span-2">
+                        <label>Alamat SPBU</label>
+                        <input type="text" id="bbmAlamat" value="JL. ALTERNATIF CIBUBUR KM. 4, BOGOR" oninput="liveRender()">
+                    </div>
+                    <div class="input-block">
+                        <label>Produk BBM</label>
+                        <select id="bbmProduk" onchange="actionBbmProductSwitch()">
+                            <option value="PERTALITE">PERTALITE</option>
+                            <option value="PERTAMAX" selected>PERTAMAX</option>
+                            <option value="PERTAMAX TURBO">PERTAMAX TURBO</option>
+                            <option value="PERTAMINA DEX">PERTAMINA DEX</option>
+                            <option value="DEXLITE">DEXLITE</option>
+                            <option value="BIOSOLAR">BIOSOLAR</option>
+                        </select>
+                    </div>
+                    <div class="input-block">
+                        <label>Harga / Liter (Rp)</label>
+                        <input type="number" id="bbmHarga" value="12100" oninput="recalcVolumeData()">
+                    </div>
+                    <div class="input-block">
+                        <label style="color: var(--pertamina);">Total Pengisian (Rp)</label>
+                        <input type="number" id="bbmTotal" value="250000" oninput="recalcVolumeData()">
+                    </div>
+                    <div class="input-block">
+                        <label>Volume Liter (Manual Edit)</label>
+                        <input type="text" id="bbmVol" value="20.66" oninput="liveRender()">
+                    </div>
+                    <div class="input-block">
+                        <label>Metode Pembayaran</label>
+                        <select id="bbmMetode" onchange="liveRender()">
+                            <option value="TUNAI / CASH">TUNAI / CASH</option>
+                            <option value="MYPERTAMINA">MYPERTAMINA</option>
+                            <option value="DEBIT BCA">DEBIT BCA</option>
+                            <option value="DEBIT MANDIRI">DEBIT MANDIRI</option>
+                        </select>
+                    </div>
+                    <div class="input-block">
+                        <label>Nama Operator</label>
+                        <input type="text" id="bbmOperator" value="ANDI R." oninput="liveRender()">
+                    </div>
+                    <div class="input-block row-span-2">
+                        <label>Nomor Plat Kendaraan</label>
+                        <input type="text" id="bbmPlat" value="F 1944 AAA" oninput="liveRender()">
                     </div>
                 </div>
+
+                <div class="form-layout">
+                    <div class="section-divider"></div>
+                    <div class="input-block">
+                        <label>Ukuran Kertas Thermal</label>
+                        <select id="globalSize" onchange="adjustPaperWidth()">
+                            <option value="80mm" selected>80 mm (Standar Kasir)</option>
+                            <option value="58mm">58 mm (EDC Mini)</option>
+                        </select>
+                    </div>
+                    <div class="input-block">
+                        <label>Skala Header Logo</label>
+                        <input type="range" id="globalScale" min="50" max="100" value="95" oninput="adjustLogoScale(this.value)">
+                    </div>
+                    <div class="input-block row-span-2">
+                        <label style="color: #16a34a;">Nomor Whatsapp Penerima API (Gunakan Kode Negara 62)</label>
+                        <input type="text" id="globalWa" placeholder="Contoh: 62812XXXXXX" oninput="liveRender()">
+                    </div>
+                </div>
+            </form>
+
+            <div class="action-group">
+                <button class="action-btn bg-print" onclick="triggerPrintEngine()">
+                    <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M6 9V2h12v7M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2m-12 0v4h12v-4M6 14h.01"></path></svg>
+                    CETAK FISIK STRUK
+                </button>
+                <button class="action-btn bg-pdf" onclick="triggerPdfGenerator()">
+                    <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                    SIMPAN FILE PDF
+                </button>
+                <button class="action-btn bg-wa" onclick="triggerWhatsAppSender()">
+                    <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946C.06 5.348 5.397.01 11.966.01c3.178.001 6.165 1.24 8.413 3.493 2.248 2.253 3.483 5.244 3.481 8.425-.004 6.615-5.34 11.954-11.914 11.954-1.995-.001-3.959-.502-5.708-1.454L0 24zm6.59-4.846c1.66.986 3.296 1.489 4.973 1.493 5.392.002 9.775-4.381 9.778-9.778.002-2.614-1.015-5.071-2.864-6.922C16.634 2.1 14.172.933 11.957.933c-5.397 0-9.78 4.382-9.783 9.782-.001 1.77.475 3.435 1.378 4.914L2.6 21.043l5.657-1.483zm9.959-7.03c-.229-.115-1.353-.667-1.562-.743-.209-.076-.361-.115-.513.115-.152.23-.588.743-.72 1.031-.133.288-.266.323-.495.208-.23-.115-.967-.357-1.843-1.139-.682-.61-1.143-1.363-1.277-1.594-.134-.23-.014-.354.101-.469.104-.103.229-.266.343-.4.114-.134.152-.23.228-.384.076-.153.038-.288-.019-.403-.057-.115-.513-1.236-.703-1.693-.186-.447-.369-.387-.513-.394-.13-.006-.28-.008-.43-.008-.15 0-.395.056-.602.282-.207.227-.79.772-.79 1.884 0 1.111.808 2.185.921 2.337.114.152 1.59 2.428 3.85 3.405.538.232.957.371 1.284.475.54.172 1.03.148 1.417.09.431-.064 1.353-.553 1.543-1.087.19-.533.19-1.014.133-1.109-.057-.095-.209-.152-.438-.267z"/></path></svg>
+                    KIRIM DATA STRUK (WA API)
+                </button>
             </div>
+        </div>
+
+        <div class="receipt-sticky-box" id="paperBox">
+            <div class="receipt-engine" id="printOutput">
+                </div>
         </div>
 
     </div>
 
+<script>
+    let currentActiveTab = 'tol';
 
-    <!-- LOGIKA PEMROSESAN DINAMIS TABEL DAN DATA -->
-    <script>
-        const dataAwalDikirim = [
-            {nama: "FABRIC 60% US COTTOΝ 33% BCI COTTON 7% POLY FLEECE (SEBELUM WASHING)", kode:"110-001-00047", jml:"27,554.22", sat:"YARD", qty:"359 ROLL"},
-            {nama: "FABRIC 93% BCI COTTON 7% RECYCLE POLY FLEECE (SEBELUM WASHING)", kode:"110-001-00047", jml:"38,010.35", sat:"YARD", qty:"475 ROLL"},
-            {nama: "FABRIC 100% BCI COTTON JERSEY (SEBELUM WASHING)", kode:"110-001-00198", jml:"3,241.58", sat:"YARD", qty:"29 ROLL"},
-            {nama: "FABRIC 60% US COTTON 40% BCI COTTON JERSEY (SEBELUM WASHING)", kode:"110-001-00198", jml:"2,518.53", sat:"YARD", qty:"20 ROLL"}
-        ];
-
-        const dataAwalDihasilkan = [
-            {nama: "FABRIC 60% US COTTOΝ 33% BCI COTTON 7% POLY FLEECE (SELESAI WASHING)", kode:"110-001-00047", jml:"27,554.22", sat:"YARD", qty:"359 BAG"},
-            {nama: "FABRIC 93% BCI COTTΟΝ 7% RECYCLE POLY FLEECE (SELESAI WASHING)", kode:"110-001-00047", jml:"38,010.35", sat:"YARD", qty:"475 BAG"},
-            {nama: "FABRIC 100% BCI COTTON JERSEY (SELESAI WASHING)", kode:"110-001-00198", jml:"3,241.58", sat:"YARD", qty:"29 BAG"},
-            {nama: "FABRIC 60% US COTTOΟΝ 40% BCI COTTON JERSEY (SELESAI WASHING)", kode:"110-001-00198", jml:"2,518.53", sat:"YARD", qty:"20 BAG"}
-        ];
-
-        function muatDataAwal() {
-            document.getElementById('container-dikirim').innerHTML = '';
-            document.getElementById('container-dihasilkan').innerHTML = '';
-            
-            dataAwalDikirim.forEach(b => insertBarisKeForm('container-dikirim', b));
-            dataAwalDihasilkan.forEach(b => insertBarisKeForm('container-dihasilkan', b));
-            
-            updateSemuaData();
+    // MASTER DATABASE OPERATOR TOAL SE-PULAU JAWA LENGKAP
+    const engineTollData = {
+        "PT JASA MARGA (PERSERO)": {
+            logo: "images.jpeg", 
+            ruas: {
+                "JAKARTA - CIKAMPEK": ["Cikampek Utama", "Kalihurip Utama", "Bekasi Barat", "Bekasi Timur", "Tambun", "Cibitung", "Cikarang Barat", "Cikarang Utama", "Cikarang Timur", "Karawang Barat", "Karawang Timur"],
+                "JAGORAWI": ["Cililitan", "Cibubur", "Cimanggis", "Gunung Putri", "Citeureup", "Sentul Utara", "Sentul Selatan", "Bogor", "Ciawi"],
+                "JAKARTA - TANGERANG": ["Tomang", "Kebon Jeruk", "Meruya", "Kembangan", "Tangerang", "Karang Tengah Barat"],
+                "DALAM KOTA JAKARTA": ["Semanggi", "Kuningan", "Tebet", "Slipi", "Pejompongan", "Tomang", "Cawang", "Rawamangun", "Pulomas"],
+                "JORR E (CIKUNIR - CILINCING)": ["Cikunir", "Jati Asih", "Bintara", "Pulogebang", "Cakung", "Cilincing"],
+                "PURBALEUNYI": ["Sadang", "Jatiluhur", "Padalarang", "Baros", "Pasteur", "Pasir Koja", "Kopo", "Moh. Toha", "Buah Batu", "Cileunyi"],
+                "SEMARANG ABC": ["Krapyak", "Manyaran", "Jatingaleh", "Tembalang", "Srondol", "Gayamsari", "Muktiharjo", "Kaligawe"],
+                "SEMARANG - SOLO": ["Banyumanik", "Ungaran", "Bawen", "Salatiga", "Boyolali", "Kartasura"],
+                "SOLO - NGAWI": ["Colomadu", "Ngemplak", "Karanganyar", "Sragen", "Sragen Timur", "Ngawi"],
+                "NGAWI - KERTOSONO": ["Madiun", "Caruban", "Nganjuk"],
+                "SURABAYA - MOJOKERTO": ["Warugunung", "Driyorejo", "Krian", "Penompo"],
+                "SURABAYA - GEMPOL": ["Dupak", "Tanjung Perak", "Banyu Urip", "Kota Satelit", "Waru", "Sidoarjo", "Porong", "Kejapanan", "Gempol"]
+            }
+        },
+        "PT ASTRA INFRA TOLL ROAD": {
+            logo: "jYVyJPS3_400x400.jpg", 
+            ruas: {
+                "CIKOPO - PALIMANAN (CIPALI)": ["Cikopo", "Kalijati", "Subang", "Cikedung", "Kertajati", "Sumberjaya", "Palimanan"],
+                "TANGERANG - MERAK": ["Cikupa", "Balaraja Timur", "Balaraja Barat", "Cikande", "Ciujung", "Serang Timur", "Serang Barat", "Merak"],
+                "SEMARANG - BATANG": ["Batang", "Kandeman", "Weleri", "Kendal", "Kaliwungu", "Krapyak Utama"],
+                "JOMBANG - MOJOKERTO": ["Bandar", "Jombang", "Mojokerto Barat"]
+            }
+        },
+        "PT WASKITA TOLL ROAD": {
+            logo: "097345200_1700023519-header_banner_contact_kbilja.webp", 
+            ruas: {
+                "PEJAGAN - PEMALANG": ["Pejagan", "Brebes Barat", "Brebes Timur (Brexit)", "Tegal", "Pemalang"],
+                "PEMALANG - BATANG": ["Pekalongan", "Batang"],
+                "PASURUAN - PROBOLINGGO": ["Pasuruan", "Grati", "Tongas", "Probolinggo Barat", "Probolinggo Timur"],
+                "CIAWI - SUKABUMI (BOCIMI)": ["Ciawi", "Caringin", "Cigombong", "Cibadak"]
+            }
+        },
+        "PT CITRA MARGA NUSAPHALA (CMNP)": {
+            logo: "", 
+            ruas: {
+                "IR. WIYOTO WIYONO": ["Kebon Nanas", "Prumpung", "Rawamangun", "Cempaka Putih", "Sunter", "Tanjung Priok"],
+                "DEPOK - ANTASARI (DESARI)": ["Antasari", "Andara", "Brigif", "Sawangan"],
+                "BOGOR OUTER RING ROAD": ["Sentul Selatan", "Bogor Raya", "Kedung Halang", "Kayu Manis"]
+            }
+        },
+        "PT HUTAMA KARYA (PERSERO)": {
+            logo: "",
+            ruas: {
+                "JORR S (PONDOK PINANG)": ["Pondok Pinang", "Fatmawati", "Ampera", "Pasar Minggu", "Kampung Rambutan"],
+                "AKSES TANJUNG PRIOK": ["Kebon Bawang", "Semper", "Rorotan"]
+            }
+        },
+        "PT MARGA TRANS NUSANTARA": {
+            logo: "",
+            ruas: {
+                "KUNCIRAN - SERPONG": ["Kunciran", "Jelupang", "Serpong"],
+                "CENGKARENG - KUNCIRAN": ["Cengkareng", "Benda", "Tanah Tinggi", "Pinang"]
+            }
         }
+    };
 
-        function insertBarisKeForm(targetId, data) {
-            const container = document.getElementById(targetId);
-            const div = document.createElement('div');
-            div.className = 'item-barang bg-white p-3 border rounded-lg space-y-1 relative';
-            div.innerHTML = `
-                <button type="button" onclick="this.parentElement.remove(); updateSemuaData();" class="absolute top-1 right-2 text-red-500 hover:text-red-700 text-xs"><i class="fa-solid fa-trash"></i> Hapus</button>
-                <input type="text" placeholder="Deskripsi Barang" class="b-nama w-full px-2 py-1 border rounded text-xs font-semibold" value="${data.nama}" oninput="updateSemuaData()">
-                <div class="grid grid-cols-4 gap-1.5">
-                    <input type="text" placeholder="Kode" class="b-kode w-full px-2 py-1 border rounded text-xs font-mono" value="${data.kode}" oninput="updateSemuaData()">
-                    <input type="text" placeholder="Volume" class="b-jumlah w-full px-2 py-1 border rounded text-xs" value="${data.jml}" oninput="updateSemuaData()">
-                    <input type="text" placeholder="Satuan" class="b-satuan w-full px-2 py-1 border rounded text-xs" value="${data.sat}" oninput="updateSemuaData()">
-                    <input type="text" placeholder="QTY" class="b-qty w-full px-2 py-1 border rounded text-xs" value="${data.qty}" oninput="updateSemuaData()">
-                </div>
-            `;
-            container.appendChild(div);
+    // DATABASE PRICING BBM STANDARD PERTAMINA
+    const engineBbmPrices = {
+        "PERTALITE": 10000, "PERTAMAX": 12100, "PERTAMAX TURBO": 13500, "PERTAMINA DEX": 13150, "DEXLITE": 12650, "BIOSOLAR": 6800
+    };
+
+    window.onload = function() {
+        try {
+            const opEl = document.getElementById("tolOp");
+            opEl.innerHTML = "";
+            for (let name in engineTollData) {
+                let node = document.createElement("option");
+                node.value = name; node.text = name; opEl.appendChild(node);
+            }
+            generateRuasData();
+        } catch(err) { console.error(err); }
+    };
+
+    // TAB CONTROLLER
+    function triggerTab(flag) {
+        currentActiveTab = flag;
+        const btnTol = document.getElementById("btnTabTol");
+        const btnBbm = document.getElementById("btnTabBbm");
+        const areaTol = document.getElementById("gridTolContainer");
+        const areaBbm = document.getElementById("gridBbmContainer");
+
+        if (flag === 'tol') {
+            btnTol.classList.add("active"); btnBbm.classList.remove("active"); btnBbm.classList.remove("bbm-active");
+            areaTol.style.display = "grid"; areaBbm.style.display = "none";
+        } else {
+            btnBbm.classList.add("active"); btnBbm.classList.add("bbm-active"); btnTol.classList.remove("active");
+            areaTol.style.display = "none"; areaBbm.style.display = "grid";
+            actionBbmProductSwitch();
         }
+        liveRender();
+    }
 
-        function tambahBarisBarang(targetId, statusText) {
-            insertBarisKeForm(targetId, {nama: `FABRIC KAIN BARU (${statusText.toUpperCase()})`, kode: '110-001-xxxxx', jml: '0.00', sat: 'YARD', qty: '0 ROLL'});
-            updateSemuaData();
+    // HANDLER DROPDOWN TOAL
+    function generateRuasData() {
+        const selectedOp = document.getElementById("tolOp").value;
+        const ruasEl = document.getElementById("tolRuas");
+        ruasEl.innerHTML = "";
+        for (let track in engineTollData[selectedOp].ruas) {
+            let node = document.createElement("option");
+            node.value = track; node.text = track; ruasEl.appendChild(node);
         }
+        generateGerbangData();
+    }
 
-        function updateSemuaData() {
-            const noKontrak = document.getElementById('in-no-kontrak').value;
-            const tglKontrak = document.getElementById('in-tgl-kontrak').value;
-            const lokasi = document.getElementById('in-lokasi').value;
-            const tglMulai = document.getElementById('in-tgl-mulai').value;
-            const tglSelesai = document.getElementById('in-tgl-selesai').value;
+    function generateGerbangData() {
+        const selectedOp = document.getElementById("tolOp").value;
+        const selectedRuas = document.getElementById("tolRuas").value;
+        const gateIn = document.getElementById("tolMasuk");
+        const gateOut = document.getElementById("tolKeluar");
 
-            const p1Nama = document.getElementById('in-p1-nama').value;
-            const p1Jabatan = document.getElementById('in-p1-jabatan').value;
-            const p1PT = document.getElementById('in-p1-PT').value;
-            const p1Npwp = document.getElementById('in-p1-npwp').value;
-            const p1Alamat = document.getElementById('in-p1-alamat').value;
+        gateIn.innerHTML = ""; gateOut.innerHTML = "";
+        const arrayGates = engineTollData[selectedOp].ruas[selectedRuas];
+        arrayGates.forEach(g => {
+            let n1 = document.createElement("option"); n1.value = g.toUpperCase(); n1.text = g.toUpperCase(); gateIn.appendChild(n1);
+            let n2 = document.createElement("option"); n2.value = g.toUpperCase(); n2.text = g.toUpperCase(); gateOut.appendChild(n2);
+        });
 
-            const p2Nama = document.getElementById('in-p2-nama').value;
-            const p2Jabatan = document.getElementById('in-p2-jabatan').value;
-            const p2PT = document.getElementById('in-p2-PT').value;
-            const p2Npwp = document.getElementById('in-p2-npwp').value;
-            const p2Alamat = document.getElementById('in-p2-alamat').value;
+        if (gateOut.options.length > 1) { gateOut.selectedIndex = 1; }
+        liveRender();
+    }
 
-            const jenis = document.getElementById('in-jenis').value;
-            const harga = document.getElementById('id-harga').value;
-            const waktu = document.getElementById('id-waktu').value;
+    // HANDLER COMPUTATION BBM
+    function actionBbmProductSwitch() {
+        const targetBbm = document.getElementById("bbmProduk").value;
+        document.getElementById("bbmHarga").value = engineBbmPrices[targetBbm];
+        recalcVolumeData();
+    }
 
-            // Live Monitor
-            document.getElementById('m-p1').innerText = p1PT;
-            document.getElementById('m-p2').innerText = p2PT;
-            document.getElementById('m-no').innerText = noKontrak;
-            document.getElementById('m-job').innerText = jenis;
+    function recalcVolumeData() {
+        const cashTotal = parseFloat(document.getElementById("bbmTotal").value) || 0;
+        const perLiter = parseFloat(document.getElementById("bbmHarga").value) || 1;
+        document.getElementById("bbmVol").value = (cashTotal / perLiter).toFixed(2);
+        liveRender();
+    }
 
-            // Sinkronisasi Cetak
-            document.getElementById('c-no-kontrak').innerText = noKontrak;
-            document.getElementById('c-p1-nama').innerText = p1Nama;
-            document.getElementById('c-p1-jabatan').innerText = p1Jabatan;
-            document.getElementById('c-p1-pt').innerText = p1PT;
-            document.getElementById('c-p1-npwp').innerText = p1Npwp;
-            document.getElementById('c-p1-alamat').innerText = p1Alamat;
-
-            document.getElementById('c-p2-nama').innerText = p2Nama;
-            document.getElementById('c-p2-jabatan').innerText = p2Jabatan;
-            document.getElementById('c-p2-pt').innerText = p2PT;
-            document.getElementById('c-p2-npwp').innerText = p2Npwp;
-            document.getElementById('c-p2-alamat').innerText = p2Alamat;
-
-            document.getElementById('c-harga').innerText = harga;
-            document.getElementById('c-waktu').innerText = waktu;
-
-            document.querySelectorAll('.c-p1-pt-inline').forEach(el => el.innerText = p1PT);
-            document.querySelectorAll('.c-p2-pt-inline').forEach(el => el.innerText = p2PT);
-            document.querySelectorAll('.c-jenis-inline').forEach(el => el.innerText = jenis);
-
-            document.getElementById('c-tgl-mulai').innerText = tglMulai;
-            document.getElementById('c-tgl-selesai').innerText = tglSelesai;
-
-            document.getElementById('c-lokasi-footer').innerText = lokasi;
-            document.getElementById('c-tgl-footer').innerText = tglKontrak;
-
-            document.getElementById('c-sign-p1-pt').innerText = p1PT;
-            document.getElementById('c-sign-p1-nama').innerText = p1Nama;
-            document.getElementById('c-sign-p1-jab').innerText = p1Jabatan;
-
-            document.getElementById('c-sign-p2-pt').innerText = p2PT;
-            document.getElementById('c-sign-p2-nama').innerText = p2Nama;
-            document.getElementById('c-sign-p2-jab').innerText = p2Jabatan;
-
-            prosesTabelCetak('container-dikirim', 'tabel-print-dikirim');
-            prosesTabelCetak('container-dihasilkan', 'tabel-print-dihasilkan');
+    // MAIN CORE RENDERING ENGINE
+    function liveRender() {
+        if (currentActiveTab === 'tol') {
+            buildTolViewHtml();
+        } else {
+            buildBbmViewHtml();
         }
+    }
 
-        function prosesTabelCetak(sourceContainerId, targetTabelId) {
-            const items = document.getElementById(sourceContainerId).querySelectorAll('.item-barang');
-            const tbody = document.getElementById(targetTabelId);
-            tbody.innerHTML = '';
+    // BUILT GRAPHIC TOAL
+    function buildTolViewHtml() {
+        const op = document.getElementById("tolOp").value;
+        const track = document.getElementById("tolRuas").value;
+        const gIn = document.getElementById("tolMasuk").value;
+        const gOut = document.getElementById("tolKeluar").value;
+        const cash = document.getElementById("tolTarif").value;
+        const rest = document.getElementById("tolSaldo").value;
+        const code = document.getElementById("tolKartu").value;
+        const imgPath = engineTollData[op].logo;
 
-            items.forEach((item, index) => {
-                const nama = item.querySelector('.b-nama').value;
-                const kode = item.querySelector('.b-kode').value;
-                const jumlah = item.querySelector('.b-jumlah').value;
-                const satuan = item.querySelector('.b-satuan').value;
-                const qty = item.querySelector('.b-qty').value;
+        let topGraphic = imgPath ? `<img id="rLogoTarget" class="r-logo-img" src="${imgPath}" style="width: ${cachedScale}%;">` : `<div class="r-bold r-center" style="font-size:11px; border:1.5px solid #000; padding:4px;">${op}</div>`;
 
-                const tr = document.createElement('tr');
-                tr.innerHTML = `
-                    <td class="p-1 text-center">${index + 1}.</td>
-                    <td class="p-1 text-left">${nama}</td>
-                    <td class="p-1 text-center font-mono">${kode}</td>
-                    <td class="p-1 text-right font-mono">${jumlah}</td>
-                    <td class="p-1 text-center uppercase">${satuan}</td>
-                    <td class="p-1 text-center">${qty}</td>
-                    <td class="p-1 text-center font-mono">26KONF511</td>
-                `;
-                tbody.appendChild(tr);
+        document.getElementById("printOutput").innerHTML = `
+            <div class="r-logo-wrap">${topGraphic}</div>
+            <div class="r-center r-bold" style="font-size:10px; margin-top:4px;">RUAS JALAN TOL: ${track}</div>
+            <div class="r-dash"></div>
+            <div class="r-flex"><span>TANGGAL/JAM</span><span>${timestampGenerator()}</span></div>
+            <div class="r-flex"><span>GERBANG MASUK</span><span class="r-bold">${gIn}</span></div>
+            <div class="r-flex"><span>GERBANG KELUAR</span><span class="r-bold">${gOut}</span></div>
+            <div class="r-dash"></div>
+            <div class="r-flex r-bold"><span>TARIF TOLL</span><span>${toRupiah(cash)}</span></div>
+            <div class="r-flex"><span>METODE BAYAR</span><span>E-TOLL KARTU</span></div>
+            <div class="r-flex"><span>NOMOR KARTU</span><span>${code}</span></div>
+            <div class="r-flex r-bold"><span>SISA SALDO</span><span>${toRupiah(rest)}</span></div>
+            <div class="r-dash"></div>
+            <div class="r-center" style="font-size:10px; margin-top:12px; font-weight:bold;">TERIMA KASIH<br>UTAMAKAN KESELAMATAN ANDA<br>SEMOGA SELAMAT SAMPAI TUJUAN</div>
+        `;
+    }
+
+    // BUILT GRAPHIC BBM
+    function buildBbmViewHtml() {
+        const spbu = document.getElementById("bbmSpbu").value;
+        const nozzle = document.getElementById("bbmNozzle").value;
+        const addr = document.getElementById("bbmAlamat").value;
+        const prod = document.getElementById("bbmProduk").value;
+        const price = document.getElementById("bbmHarga").value;
+        const total = document.getElementById("bbmTotal").value;
+        const liter = document.getElementById("bbmVol").value;
+        const pay = document.getElementById("bbmMetode").value;
+        const user = document.getElementById("bbmOperator").value;
+        const plat = document.getElementById("bbmPlat").value;
+        const dummyTrx = "TRX-" + String(spbu).replace(/[^0-9]/g, '') + "-" + String(Date.now()).substring(7);
+
+        document.getElementById("printOutput").innerHTML = `
+            <div class="r-center r-bold" style="font-size:13px; letter-spacing:0.5px;">PT. PERTAMINA (PERSERO)</div>
+            <div class="r-center r-bold" style="font-size:12px;">SPBU ${spbu}</div>
+            <div class="r-center" style="font-size:9px; font-weight:bold; line-height:1.2;">${addr.toUpperCase()}</div>
+            <div class="r-dash"></div>
+            <div class="r-flex"><span>NO. TRANSAKSI</span><span>${dummyTrx}</span></div>
+            <div class="r-flex"><span>WAKTU UTAMA</span><span>${timestampGenerator()}</span></div>
+            <div class="r-flex"><span>NO. NOZZLE</span><span class="r-bold">${nozzle}</span></div>
+            ${plat ? `<div class="r-flex"><span>PLAT NOMOR</span><span class="r-bold">${plat.toUpperCase()}</span></div>` : ''}
+            <div class="r-dash"></div>
+            <div class="r-flex r-bold" style="font-size:13px;"><span>PRODUK</span><span>${prod}</span></div>
+            <div class="r-flex"><span>HARGA / LITER</span><span>${toRupiah(price)}</span></div>
+            <div class="r-flex"><span>VOLUME BBM</span><span class="r-bold">${liter} L</span></div>
+            <div class="r-dash"></div>
+            <div class="r-flex r-bold" style="font-size:14px; margin:2px 0;"><span>TOTAL BAYAR</span><span>${toRupiah(total)}</span></div>
+            <div class="r-flex"><span>CARA BAYAR</span><span>${pay}</span></div>
+            <div class="r-flex"><span>NAMA PETUGAS</span><span>${user.toUpperCase()}</span></div>
+            <div class="r-dash"></div>
+            <div class="r-center" style="font-size:10px; margin-top:12px; font-weight:bold;">TERIMA KASIH<br>PASAL 363 KUHP : BBM BUKAN UNTUK DIKULAK<br>UTAMAKAN KESELAMATAN DI JALAN RAYA</div>
+        `;
+    }
+
+    // CONTROLLER GLOBAL SIZING & SCALING
+    function adjustPaperWidth() {
+        const formatSize = document.getElementById("globalSize").value;
+        document.getElementById("paperBox").style.width = formatSize;
+    }
+
+    let cachedScale = 95; 
+    function adjustLogoScale(val) {
+        cachedScale = val;
+        const targetNode = document.getElementById("rLogoTarget");
+        if (targetNode) { targetNode.style.width = val + "%"; }
+    }
+
+    // FORMATTING UTILITIES
+    function toRupiah(num) {
+        return "Rp " + parseInt(num || 0).toLocaleString('id-ID');
+    }
+
+    function timestampGenerator() {
+        const d = new Date();
+        return d.getDate().toString().padStart(2, '0') + "/" + (d.getMonth()+1).toString().padStart(2, '0') + "/" + d.getFullYear() + " " + d.getHours().toString().padStart(2, '0') + ":" + d.getMinutes().toString().padStart(2, '0');
+    }
+
+    // PRINT, PDF, AND WHATSAPP CORE ENGINES
+    function triggerPrintEngine() {
+        window.print();
+    }
+
+    function triggerPdfGenerator() {
+        try {
+            if (typeof html2pdf === 'undefined') { alert("Koneksi Internet Diperlukan!"); return; }
+            const payload = document.getElementById("printOutput");
+            const logoArea = payload.querySelector('.r-logo-wrap');
+            let cacheLogoHtml = logoArea ? logoArea.innerHTML : "";
+            if (logoArea) logoArea.innerHTML = ""; 
+
+            const targetWidthStr = document.getElementById("globalSize").value;
+            const numericWidth = parseInt(targetWidthStr); 
+            payload.style.padding = "8px";
+
+            const opt = {
+                margin: 2,
+                filename: `DewaPenolong_${currentActiveTab.toUpperCase()}_${Date.now()}.pdf`,
+                image: { type: 'jpeg', quality: 1.0 },
+                html2canvas: { scale: 3, logging: false, useCORS: true },
+                jsPDF: { unit: 'mm', format: [numericWidth, 145], orientation: 'portrait' }
+            };
+
+            html2pdf().set(opt).from(payload).save().then(() => {
+                if (logoArea) logoArea.innerHTML = cacheLogoHtml;
+                payload.style.padding = "0px";
+            }).catch(e => {
+                if (logoArea) logoArea.innerHTML = cacheLogoHtml;
+                payload.style.padding = "0px"; alert("PDF Error: " + e.message);
             });
-        }
+        } catch (x) { alert("Sistem Error."); }
+    }
 
-        window.onload = function() {
-            muatDataAwal();
-        };
-    </script>
+    function triggerWhatsAppSender() {
+        try {
+            let message = "";
+            let targetPhone = document.getElementById("globalWa").value.trim().replace(/[^0-9]/g, '');
+
+            if (currentActiveTab === 'tol') {
+                message = `*DEWA PENOLONG - STRUK PEMBAYARAN TOLL*\n----------------------------------------\n*Operator:* ${document.getElementById("tolOp").value}\n*Lintasan:* ${document.getElementById("tolRuas").value}\n*Waktu:* ${timestampGenerator()}\n----------------------------------------\n*GT. Masuk:* ${document.getElementById("tolMasuk").value}\n*GT. Keluar:* ${document.getElementById("tolKeluar").value}\n\n*TARIF TOLL:* ${toRupiah(document.getElementById("tolTarif").value)}\n*Metode:* E-TOLL KARTU (${document.getElementById("tolKartu").value})\n*SISA SALDO:* ${toRupiah(document.getElementById("tolSaldo").value)}\n----------------------------------------`;
+            } else {
+                message = `*DEWA PENOLONG - STRUK BBM PERTAMINA*\n----------------------------------------\n*SPBU:* ${document.getElementById("bbmSpbu").value}\n*Alamat:* ${document.getElementById("bbmAlamat").value}\n*Waktu:* ${timestampGenerator()}\n----------------------------------------\n*Nozzle/Pompa:* ${document.getElementById("bbmNozzle").value}\n*Plat Nomor:* ${document.getElementById("bbmPlat").value.toUpperCase()}\n\n*PRODUK:* ${document.getElementById("bbmProduk").value}\n*Harga/L:* ${toRupiah(document.getElementById("bbmHarga").value)}\n*Volume:* ${document.getElementById("bbmVol").value} L\n\n*TOTAL BAYAR:* ${toRupiah(document.getElementById("bbmTotal").value)}\n*Metode:* ${document.getElementById("bbmMetode").value}\n----------------------------------------`;
+            }
+
+            let destinationUrl = targetPhone !== "" ? `https://api.whatsapp.com/send?phone=${targetPhone}&text=${encodeURIComponent(message)}` : `https://api.whatsapp.com/send?text=${encodeURIComponent(message)}`;
+            window.open(destinationUrl, '_blank');
+        } catch(e) { alert("WhatsApp API Error: " + e.message); }
+    }
+</script>
+
 </body>
 </html>
