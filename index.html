@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DEWA PENOLONG PRO - Sistem Multi-Struk Berbayar</title>
+    <title>Sistem Multi-Struk Berbayar</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <style>
         :root {
@@ -36,7 +36,7 @@
             justify-content: flex-start;
         }
 
-        /* BRANDING HEADER */
+        /* BRANDING HEADER DASHBOARD (Hanya muncul di web browser) */
         .brand-container {
             text-align: center;
             margin-bottom: 20px;
@@ -269,7 +269,7 @@
             font-size: 12px;
             color: #000;
             line-height: 1.4;
-            background: #fff;
+            background: #ffffff;
         }
         
         .r-logo-wrap {
@@ -280,7 +280,7 @@
             align-items: center;
         }
 
-        .r-logo-img { display: block; max-width: 100%; height: auto; mix-blend-mode: multiply; }
+        .r-logo-img { display: block; max-width: 100%; height: auto; }
         .r-center { text-align: center; }
         .r-dash { border-top: 1px dashed #000; margin: 8px 0; }
         .r-flex { display: flex; justify-content: space-between; }
@@ -319,11 +319,26 @@
             .section-divider { grid-column: span 1; }
         }
 
+        /* PERBAIKAN FITUR CETAK FISIK (CLEAN DARI URL & DASHBOARD BANNER) */
         @media print {
-            body { background: white; padding: 0; }
-            .brand-container, .wallet-card, .card-panel, .modal-overlay { display: none !important; }
-            .receipt-sticky-box { border: none; box-shadow: none; padding: 0; margin: 0; width: 100%; }
-            .r-logo-wrap { display: none !important; } 
+            @page {
+                margin: 0; /* Menghapus total header link URL browser dibagian bawah & atas kertas */
+            }
+            body { 
+                background: #ffffff; 
+                padding: 0; 
+                margin: 6mm 4mm; /* Memberikan margin fisik aman pada printer thermal */
+            }
+            .brand-container, .wallet-card, .card-panel, .modal-overlay { 
+                display: none !important; /* Menyembunyikan dashboard sistem */
+            }
+            .receipt-sticky-box { 
+                border: none !important; 
+                box-shadow: none !important; 
+                padding: 0 !important; 
+                margin: 0 !important; 
+                width: 100% !important; 
+            }
         }
     </style>
 </head>
@@ -496,11 +511,9 @@
     </div>
 
 <script>
-    // STATE SALDO KREDIT (Simulasi awal: 3 kredit)
     let userCredits = 3;
     let currentActiveTab = 'tol';
 
-    // DATABASE OPERATOR
     const engineTollData = {
         "PT JASA MARGA (PERSERO)": {
             logo: "images.jpeg", 
@@ -532,7 +545,6 @@
         document.getElementById("creditDisplay").innerText = `${userCredits} Kredit Tersisa`;
     }
 
-    // INTERMEDIATE VALIDATOR AKSI BERBAYAR
     function executePaidAction(actionType) {
         if (userCredits <= 0) {
             alert("❌ Maaf, Sisa Kredit Anda Habis! Silakan lakukan Top Up Kredit terlebih dahulu menggunakan QRIS di panel atas.");
@@ -548,22 +560,19 @@
             triggerWhatsAppSender();
         }
 
-        // Potong Kredit
         userCredits--;
         updateCreditUI();
     }
 
-    // SIMULASI PAYMENT GATEWAY FUNCTIONS
     function openTopUpModal() { document.getElementById("qrisModal").classList.add("open"); }
     function closeTopUpModal() { document.getElementById("qrisModal").classList.remove("open"); }
     function simulatePaymentSuccess() {
         userCredits += 10;
         updateCreditUI();
         closeTopUpModal();
-        alert("✅ Pembayaran QRIS Berhasil! 10 Kredit Cetak telah ditambahkan ke akun Anda.");
+        alert("✅ Pembayaran QRIS Berhasil! 10 Kredit Cetak telah ditambahkan.");
     }
 
-    // DRIVER INTERFACES
     function triggerTab(flag) {
         currentActiveTab = flag;
         const btnTol = document.getElementById("btnTabTol");
@@ -695,13 +704,40 @@
     function toRupiah(num) { return "Rp " + parseInt(num || 0).toLocaleString('id-ID'); }
     function timestampGenerator() { const d = new Date(); return d.getDate().toString().padStart(2, '0') + "/" + (d.getMonth()+1).toString().padStart(2, '0') + "/" + d.getFullYear() + " " + d.getHours().toString().padStart(2, '0') + ":" + d.getMinutes().toString().padStart(2, '0'); }
 
+    /* PERBAIKAN FITUR GENERATE PDF AGAR TIDAK BLANK */
     function triggerPdfGenerator() {
         const payload = document.getElementById("printOutput");
-        const opt = { margin: 2, filename: `Struk_${Date.now()}.pdf`, image: { type: 'jpeg', quality: 1.0 }, html2canvas: { scale: 3 }, jsPDF: { unit: 'mm', format: [parseInt(document.getElementById("globalSize").value), 145], orientation: 'portrait' } };
-        html2pdf().set(opt).from(payload).save();
+        const paperSize = document.getElementById("globalSize").value;
+        const numericWidth = paperSize === '58mm' ? 58 : 80;
+
+        // Kunci warna latar belakang container agar html2canvas tidak mendeteksi warna transparan
+        payload.style.backgroundColor = "#ffffff";
+        payload.style.padding = "10px";
+
+        const opt = { 
+            margin: [5, 5, 5, 5], // Memberikan ruang margin di dalam dokumen PDF (Atas, Kiri, Bawah, Kanan)
+            filename: `Struk_Resmi_${Date.now()}.pdf`, 
+            image: { type: 'jpeg', quality: 1.0 }, 
+            html2canvas: { 
+                scale: 3, 
+                useCORS: true,
+                logging: false,
+                backgroundColor: '#ffffff'
+            }, 
+            jsPDF: { 
+                unit: 'mm', 
+                format: [numericWidth, 160], // Format lebar dinamis mengikuti pilihan kertas thermal
+                orientation: 'portrait' 
+            } 
+        };
+
+        // Eksekusi pembuatan PDF tanpa merusak susunan tata letak aslinya
+        html2pdf().set(opt).from(payload).save().then(() => {
+            // Mengembalikan nilai padding default setelah konversi PDF selesai
+            payload.style.padding = "0px";
+        });
     }
 
-    // FITUR UTAMA WHATSAPP SENDER (SUDAH BERSIH DARI KALIMAT DEWA PENOLONG)
     function triggerWhatsAppSender() {
         try {
             let message = "";
