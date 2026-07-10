@@ -322,15 +322,15 @@
         /* PERBAIKAN FITUR CETAK FISIK (CLEAN DARI URL & DASHBOARD BANNER) */
         @media print {
             @page {
-                margin: 0; /* Menghapus total header link URL browser dibagian bawah & atas kertas */
+                margin: 0; 
             }
             body { 
                 background: #ffffff; 
                 padding: 0; 
-                margin: 6mm 4mm; /* Memberikan margin fisik aman pada printer thermal */
+                margin: 6mm 4mm; 
             }
             .brand-container, .wallet-card, .card-panel, .modal-overlay { 
-                display: none !important; /* Menyembunyikan dashboard sistem */
+                display: none !important; 
             }
             .receipt-sticky-box { 
                 border: none !important; 
@@ -380,11 +380,11 @@
                     </div>
                     <div class="input-block">
                         <label>Gerbang Masuk</label>
-                        <select id="tolMasuk" onchange="liveRender()"></select>
+                        <select id="tolMasuk" onchange="recalcTollTarif()"></select>
                     </div>
                     <div class="input-block">
                         <label>Gerbang Keluar</label>
-                        <select id="tolKeluar" onchange="liveRender()"></select>
+                        <select id="tolKeluar" onchange="recalcTollTarif()"></select>
                     </div>
                     <div class="input-block">
                         <label style="color: var(--primary);">Tarif Tol (Rp)</label>
@@ -478,10 +478,6 @@
                     <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M6 9V2h12v7M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2m-12 0v4h12v-4M6 14h.01"></path></svg>
                     CETAK FISIK STRUK (Potong 1 Kredit)
                 </button>
-                <button class="action-btn bg-pdf" onclick="executePaidAction('pdf')">
-                    <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
-                    SIMPAN FILE PDF (Potong 1 Kredit)
-                </button>
                 <button class="action-btn bg-wa" onclick="executePaidAction('wa')">
                     <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946C.06 5.348 5.397.01 11.966.01c3.178.001 6.165 1.24 8.413 3.493 2.248 2.253 3.483 5.244 3.481 8.425-.004 6.615-5.34 11.954-11.914 11.954-1.995-.001-3.959-.502-5.708-1.454L0 24zm6.59-4.846c1.66.986 3.296 1.489 4.973 1.493 5.392.002 9.775-4.381 9.778-9.778.002-2.614-1.015-5.071-2.864-6.922C16.634 2.1 14.172.933 11.957.933c-5.397 0-9.78 4.382-9.783 9.782-.001 1.77.475 3.435 1.378 4.914L2.6 21.043l5.657-1.483zm9.959-7.03c-.229-.115-1.353-.667-1.562-.743-.209-.076-.361-.115-.513.115-.152.23-.588.743-.72 1.031-.133.288-.266.323-.495.208-.23-.115-.967-.357-1.843-1.139-.682-.61-1.143-1.363-1.277-1.594-.134-.23-.014-.354.101-.469.104-.103.229-.266.343-.4.114-.134.152-.23.228-.384.076-.153.038-.288-.019-.403-.057-.115-.513-1.236-.703-1.693-.186-.447-.369-.387-.513-.394-.13-.006-.28-.008-.43-.008-.15 0-.395.056-.602.282-.207.227-.79.772-.79 1.884 0 1.111.808 2.185.921 2.337.114.152 1.59 2.428 3.85 3.405.538.232.957.371 1.284.475.54.172 1.03.148 1.417.09.431-.064 1.353-.553 1.543-1.087.19-.533.19-1.014.133-1.109-.057-.095-.209-.152-.438-.267z"/></path></svg>
                     KIRIM VIA WA API (Potong 1 Kredit)
@@ -514,22 +510,54 @@
     let userCredits = 3;
     let currentActiveTab = 'tol';
 
+    // DATABASE MULTI-OPERATOR JALAN TOL DAN MATRIKS TARIF DINAMIS
     const engineTollData = {
-        "PT JASA MARGA (PERSERO)": {
+        "PT JASA MARGA (PERSERO) TBK": {
             logo: "images.jpeg", 
             ruas: {
-                "JAKARTA - CIKAMPEK": ["Cikampek Utama", "Kalihurip Utama", "Bekasi Barat", "Cikarang Barat"],
-                "JAGORAWI": ["Cililitan", "Cibubur", "Bogor", "Ciawi"]
+                "JAKARTA - CIKAMPEK": { type: "flat", tarif: 27000, gates: ["Halim", "Bekasi Barat", "Bekasi Timur", "Cibitung", "Cikarang Barat", "Karawang Barat", "Karawang Timur", "Cikampek Utama"] },
+                "JAGORAWI": { type: "flat", tarif: 7500, gates: ["Cililitan", "Cibubur", "Gunung Putri", "Citeureup", "Sentul", "Bogor", "Ciawi"] },
+                "DALAM KOTA JAKARTA": { type: "flat", tarif: 10500, gates: ["Semanggi", "Kuningan", "Tebet", "Senayan", "Tomang", "Cawang", "Pluit", "Ancol"] },
+                "PURBALEUNYI": { type: "distance", base: 10000, perGate: 8500, gates: ["Sadang", "Jatiluhur", "Padalarang", "Pasteur", "Baros", "Moh Toha", "Buah Batu", "Cileunyi"] },
+                "SEMARANG ABC": { type: "flat", tarif: 5500, gates: ["Manyaran", "Gayamsari", "Muktiharjo", "Tembalang", "Jatingaleh"] },
+                "SURABAYA - GEMPOL": { type: "distance", base: 5000, perGate: 4500, gates: ["Dupak", "Waru", "Sidoarjo", "Porong", "Kejapanan", "Gempol"] }
             }
         },
         "PT ASTRA INFRA TOLL ROAD": {
             logo: "jYVyJPS3_400x400.jpg", 
             ruas: {
-                "CIKOPO - PALIMANAN (CIPALI)": ["Cikopo", "Subang", "Palimanan"]
+                "CIKOPO - PALIMANAN (CIPALI)": { type: "distance", base: 19000, perGate: 18000, gates: ["Cikopo", "Kalijati", "Subang", "Cikedung", "Kertajati", "Sumberjaya", "Palimanan"] },
+                "TANGERANG - MERAK": { type: "distance", base: 7000, perGate: 6500, gates: ["Cikupa", "Balaraja Timur", "Balaraja Barat", "Ciujung", "Serang Timur", "Serang Barat", "Cilegon Timur", "Cilegon Barat", "Merak"] },
+                "JOMBANG - MOJOKERTO": { type: "distance", base: 6000, perGate: 11000, gates: ["Bandar", "Jombang", "Mojokerto Barat", "Mojokerto"] }
+            }
+        },
+        "PT HUTAMA KARYA (PERSERO)": {
+            logo: "hutama_karya.jpg", 
+            ruas: {
+                "BAKAUHENI - TERBANGGI BESAR": { type: "distance", base: 22000, perGate: 19500, gates: ["Bakauheni Selatan", "Bakauheni Utara", "Kalianda", "Sidomulyo", "Kotabaru", "Natar", "Tegineneng", "Terbanggi Besar"] },
+                "TERBANGGI BESAR - KAYU AGUNG": { type: "distance", base: 50000, perGate: 35000, gates: ["Terbanggi Besar", "Gunung Batin", "Menggala", "Lambu Kibang", "Way Kenanga", "Simpang Pematang", "Kayu Agung"] },
+                "PEKANBARU - DUMAI": { type: "distance", base: 18000, perGate: 20000, gates: ["Pekanbaru", "Minas", "Kandis Selatan", "Kandis Utara", "Pinggir", "Duri", "Dumai"] },
+                "MEDAN - BINJAI": { type: "flat", tarif: 13000, gates: ["Tanjung Mulia", "Helvetia", "Semayang", "Binjai"] }
+            }
+        },
+        "PT CITRA MARGA NUSAPHALA (CMNP)": {
+            logo: "cmnp.jpg",
+            ruas: {
+                "IR. WIYOTO WIYONO (CAWANG-ANCOL)": { type: "flat", tarif: 10500, gates: ["Kebon Bawang", "Podomoro", "Pulomas", "Rawamangun", "Jatinegara", "Cawang"] },
+                "DEPOK - ANTASARI (DESARI)": { type: "distance", base: 8500, perGate: 5000, gates: ["Cilandak Utama", "Andara", "Brigif", "Krukut", "Sawangan"] }
+            }
+        },
+        "PT WASKITA TOLL ROAD": {
+            logo: "waskita.jpg",
+            ruas: {
+                "PEJAGAN - PEMALANG": { type: "distance", base: 12000, perGate: 11000, gates: ["Pejagan", "Brebes Barat", "Brebes Timur", "Tegal Timur", "Pemalang"] },
+                "PEMALANG - BATANG": { type: "distance", base: 10000, perGate: 13000, gates: ["Pemalang", "Pekalongan", "Batang"] },
+                "KANCI - PEJAGAN": { type: "distance", base: 9500, perGate: 9000, gates: ["Kanci", "Mertapada", "Ciledug", "Pejagan"] },
+                "PASURUAN - PROBOLINGGO": { type: "distance", base: 8000, perGate: 10000, gates: ["Grati", "Tongas", "Probolinggo Barat", "Probolinggo Timur"] }
             }
         }
     };
-    const engineBbmPrices = { "PERTALITE": 10000, "PERTAMAX": 12100 };
+    const engineBbmPrices = { "PERTALITE": 10000, "PERTAMAX": 12100, "PERTAMAX TURBO": 14500, "PERTAMINA DEX": 15100, "DEXLITE": 14700 };
 
     window.onload = function() {
         updateCreditUI();
@@ -545,6 +573,7 @@
         document.getElementById("creditDisplay").innerText = `${userCredits} Kredit Tersisa`;
     }
 
+    // HANDLER AKSI UTAMA DENGAN SISTEM KREDIT
     function executePaidAction(actionType) {
         if (userCredits <= 0) {
             alert("❌ Maaf, Sisa Kredit Anda Habis! Silakan lakukan Top Up Kredit terlebih dahulu menggunakan QRIS di panel atas.");
@@ -554,8 +583,6 @@
 
         if (actionType === 'print') {
             window.print();
-        } else if (actionType === 'pdf') {
-            triggerPdfGenerator();
         } else if (actionType === 'wa') {
             triggerWhatsAppSender();
         }
@@ -609,12 +636,38 @@
         const gateOut = document.getElementById("tolKeluar");
 
         gateIn.innerHTML = ""; gateOut.innerHTML = "";
-        const arrayGates = engineTollData[selectedOp].ruas[selectedRuas];
+        const arrayGates = engineTollData[selectedOp].ruas[selectedRuas].gates;
         arrayGates.forEach(g => {
             let n1 = document.createElement("option"); n1.value = g.toUpperCase(); n1.text = g.toUpperCase(); gateIn.appendChild(n1);
             let n2 = document.createElement("option"); n2.value = g.toUpperCase(); n2.text = g.toUpperCase(); gateOut.appendChild(n2);
         });
         if (gateOut.options.length > 1) { gateOut.selectedIndex = 1; }
+        recalcTollTarif();
+    }
+
+    function recalcTollTarif() {
+        const op = document.getElementById("tolOp").value;
+        const track = document.getElementById("tolRuas").value;
+        const gInIdx = document.getElementById("tolMasuk").selectedIndex;
+        const gOutIdx = document.getElementById("tolKeluar").selectedIndex;
+
+        if(!op || !track) return;
+
+        const targetData = engineTollData[op].ruas[track];
+        let calculatedFare = 0;
+
+        if(targetData.type === "flat") {
+            calculatedFare = targetData.tarif;
+        } else if(targetData.type === "distance") {
+            let distanceGap = Math.abs(gOutIdx - gInIdx);
+            if(distanceGap === 0) {
+                calculatedFare = targetData.base; 
+            } else {
+                calculatedFare = targetData.base + ((distanceGap - 1) * targetData.perGate);
+            }
+        }
+
+        document.getElementById("tolTarif").value = calculatedFare;
         liveRender();
     }
 
@@ -703,40 +756,6 @@
     let cachedScale = 95; function adjustLogoScale(val) { cachedScale = val; const t = document.getElementById("rLogoTarget"); if(t) t.style.width = val + "%"; }
     function toRupiah(num) { return "Rp " + parseInt(num || 0).toLocaleString('id-ID'); }
     function timestampGenerator() { const d = new Date(); return d.getDate().toString().padStart(2, '0') + "/" + (d.getMonth()+1).toString().padStart(2, '0') + "/" + d.getFullYear() + " " + d.getHours().toString().padStart(2, '0') + ":" + d.getMinutes().toString().padStart(2, '0'); }
-
-    /* PERBAIKAN FITUR GENERATE PDF AGAR TIDAK BLANK */
-    function triggerPdfGenerator() {
-        const payload = document.getElementById("printOutput");
-        const paperSize = document.getElementById("globalSize").value;
-        const numericWidth = paperSize === '58mm' ? 58 : 80;
-
-        // Kunci warna latar belakang container agar html2canvas tidak mendeteksi warna transparan
-        payload.style.backgroundColor = "#ffffff";
-        payload.style.padding = "10px";
-
-        const opt = { 
-            margin: [5, 5, 5, 5], // Memberikan ruang margin di dalam dokumen PDF (Atas, Kiri, Bawah, Kanan)
-            filename: `Struk_Resmi_${Date.now()}.pdf`, 
-            image: { type: 'jpeg', quality: 1.0 }, 
-            html2canvas: { 
-                scale: 3, 
-                useCORS: true,
-                logging: false,
-                backgroundColor: '#ffffff'
-            }, 
-            jsPDF: { 
-                unit: 'mm', 
-                format: [numericWidth, 160], // Format lebar dinamis mengikuti pilihan kertas thermal
-                orientation: 'portrait' 
-            } 
-        };
-
-        // Eksekusi pembuatan PDF tanpa merusak susunan tata letak aslinya
-        html2pdf().set(opt).from(payload).save().then(() => {
-            // Mengembalikan nilai padding default setelah konversi PDF selesai
-            payload.style.padding = "0px";
-        });
-    }
 
     function triggerWhatsAppSender() {
         try {
